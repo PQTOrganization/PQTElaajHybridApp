@@ -1,0 +1,21 @@
+.card-main {
+  border-style: inset;
+  border-color: Black;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border-bottom-left-radius: 15px;
+  border-width: thin;
+  flex-direction: column;
+  color: #8b0037;
+  width: 100%;
+  max-width: 360px;
+  padding: 5px;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.card-header {
+  width: 100%;
+  background-color: transparent !important;
+}
