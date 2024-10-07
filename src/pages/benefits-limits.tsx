@@ -57,7 +57,6 @@ const BenefitsLimits = () => {
         token
       )
         .then((resp) => {
-          console.log("Benefits: ", { resp });
           setCoverageData(resp);
         })
         .catch((err) => setError(err))
@@ -130,11 +129,7 @@ const BenefitsLimits = () => {
           </GridDX>
           <GridDX item xs={12}>
             <GridDX container sx={{ width: "100%" }} rowSpacing={1}>
-              <GridDX item xs={12}>
-                <Typography variant="h6" color="primary">
-                  Coverage Detail
-                </Typography>
-              </GridDX>
+              
               <GridDX item xs={12}>
                 <CoverageTable
                   data={coverageData}

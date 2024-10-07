@@ -8,7 +8,7 @@ import BellIcon from "@mui/icons-material/Notifications";
 
 const DashboardBoardAppBarDX = () => {
   const routeMap = new Map<string, string>([
-    ["home", "Welcome to Pak-Qatar"],
+    ["home", "Welcome to Pak-Qatar Takaful"],
     ["claims", "Claims"],
     ["panel-hospitals", "Panel Hospitals"],
     ["call", "Call"],

@@ -10,6 +10,17 @@ import NotificationBarDX from "../components/notificationbardx";
 const DashboardTemplate = () => {
   const location = useLocation();
   const [transitionName, setTransitionName] = useState("next");
+  const [isBottom, setIsBottom] = useState(false);
+
+  const handleScroll = (e: any) => {
+    const { scrollHeight, scrollTop, clientHeight } = e.target;
+
+    if (Math.abs(scrollHeight - clientHeight - scrollTop) < 1) {
+      setIsBottom(true);
+    } else if (isBottom) {
+      setIsBottom(false);
+    }
+  };
 
   return (
     <GridDX
@@ -29,6 +40,7 @@ const DashboardTemplate = () => {
           position: "relative",
           flexDirection: "column",
         }}
+        //onScroll={handleScroll}
       >
         <NotificationBarDX />
         <TransitionGroup component={null}>
@@ -37,7 +49,7 @@ const DashboardTemplate = () => {
             classNames={transitionName}
             timeout={2000}
           >
-            <Outlet />
+            <Outlet context={isBottom} />
           </CSSTransition>
         </TransitionGroup>
       </GridDX>

@@ -89,8 +89,6 @@ const PreAuthorization = () => {
     const newErrors = { ...errors };
     delete newErrors["panelHospitalId"];
 
-    console.log({ v });
-
     setErrors(newErrors);
     setFormValues({
       ...formValues,

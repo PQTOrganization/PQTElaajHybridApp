@@ -13,12 +13,6 @@ const ComplaintCard = (props: any) => {
   const theme = useTheme();
 
   const complainData = props.data;
-  //   {
-  //     status: 1,
-  //     complainDate: "20230201",
-  //     subject: "Everything has gone wrong",
-  //     complainTypeName: "Feedback",
-  //   }; //
 
   const complainStatus = ["", "Open", "Closed"];
 

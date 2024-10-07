@@ -11,8 +11,13 @@ body {
   background: url("./assets/pak_qatar_semi_circle_logo_2.png");
   background-position: center;
   background-repeat: no-repeat;
-  background-size: contain;
-  background-position-x: right;
-  background-color: #f0f4f7;
+  background-size: cover;
+  min-height: 100vh;
   background-blend-mode: color-burn;
+}
+@media (max-width: 768px) {
+  body {
+    background: url("./assets/Elaaj_App_Screen.jpg") no-repeat center center;
+    background-size: cover;
+  }
 }

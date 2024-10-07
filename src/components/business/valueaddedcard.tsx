@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { Typography, CardContent, Avatar } from "@mui/material";
 
 import CardDX from "../layout/carddx";
@@ -7,12 +6,7 @@ import ButtonDX from "../../components/controls/buttondx";
 import { openURLInBrowser } from "../../shared/globals";
 
 const ValueAddedCard = (props: any) => {
-  const navigate = useNavigate();
   const data = props.data ?? "";
-
-  // const openURLInBrowser = (url: string) => {
-  //   navigate("/webpage", { state: { url } });
-  // };
 
   return (
     <CardDX sx={{ width: "100%", my: 1 }}>

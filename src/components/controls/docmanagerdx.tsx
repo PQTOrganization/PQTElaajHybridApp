@@ -12,15 +12,13 @@ import ButtonDX from "./buttondx";
 
 import { useErrorContext } from "../../context/errorcontext";
 
-import {
-  DOC_SIZE,
-  minimumDocs,
-  maximumDocs,
-  toBase64,
-} from "../../shared/globals";
+import { toBase64 } from "../../shared/globals";
+import { useConfigContext } from "../../context/configcontext";
 
 const DocManagerDX = forwardRef((props: any, ref: any) => {
   const { setError } = useErrorContext();
+  const { DOC_SIZE, MIN_DOCS, MAX_DOCS } = useConfigContext();
+
   useImperativeHandle(ref, () => ({
     documentList() {
       return docs;
@@ -97,7 +95,7 @@ const DocManagerDX = forwardRef((props: any, ref: any) => {
           Attach Document(s)
         </Typography>
         <Typography sx={{ fontWeight: 400, fontSize: 12 }}>
-          Minimum {minimumDocs} & Maximum {maximumDocs} Documents can be added
+          Minimum {MIN_DOCS} & Maximum {MAX_DOCS} Documents can be added
         </Typography>
       </GridDX>
       <GridDX item xs={12} sx={{ flexDirection: "column" }}>
@@ -136,7 +134,7 @@ const DocManagerDX = forwardRef((props: any, ref: any) => {
         ))}
       </GridDX>
       <GridDX item xs={12}>
-        {docs.length < maximumDocs && (
+        {docs.length < MIN_DOCS && (
           <BoxDX>
             <input
               id="uploadDoc"

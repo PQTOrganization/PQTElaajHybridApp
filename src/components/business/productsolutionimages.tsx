@@ -1,5 +1,3 @@
-import { useNavigate } from "react-router-dom";
-
 import {
   Grid,
   ImageList,
@@ -9,12 +7,7 @@ import {
 import { openURLInBrowser } from "../../shared/globals";
 
 const ProductsSolutionsImage = (props: any) => {
-  const navigate = useNavigate();
   const data = props.data ?? "";
-
-  // const openURLInBrowser = (url: string) => {
-  //   navigate("/webpage", { state: { url } });
-  // };
 
   return (
     <Grid container>
@@ -41,11 +34,11 @@ const ProductsSolutionsImage = (props: any) => {
                 <ImageListItem>
                   <img
                     src={
-                      item?.src ??
+                      item?.productImage ??
                       "https://propertywiselaunceston.com.au/wp-content/themes/property-wise/images/no-image@2x.png"
                     }
                   />
-                  {!item.src && (
+                  {!item.productImage && (
                     <ImageListItemBar position="top" title={item.name} />
                   )}
                 </ImageListItem>

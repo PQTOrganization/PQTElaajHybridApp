@@ -27,7 +27,6 @@ const Profile = () => {
   useEffect(() => {
     getUserDetails()
       .then((userDetails: any) => {
-        console.log("User Details", userDetails);
         setMembers(userDetails);
       })
       .catch((err: any) => console.log(err))
@@ -87,31 +86,10 @@ const Profile = () => {
                 vertical: "bottom",
                 horizontal: "right",
               }}
-              // onClick={() => setUploadModal(!uploadModal)}
-              // badgeContent={
-              // 	<AddCircleRounded
-              // 		// size="large"
-              // 		style={{
-              // 			color: '#141233',
-              // 			backgroundColor: '#ffffff',
-              // 			borderRadius: '100%',
-              // 			borderWidth: '0px',
-              // 		}}
-              // 	/>
-              // }
               overlap="circular"
             >
               <Avatar
                 alt=""
-                // src={
-                //   image
-                //     ? image
-                //     : userData.profileImage
-                //     ? process.env.REACT_APP_BASE_API +
-                //       "reviewers/profile/" +
-                //       userData.profileImage
-                //     : "/static/images/avatar/1.jpg"
-                // }
                 src="https://www.pngmart.com/files/22/User-Avatar-Profile-PNG-Isolated-Transparent-Picture.png"
                 sx={{ width: 90, height: 90, textAlign: "center" }}
               />
@@ -120,11 +98,6 @@ const Profile = () => {
         </GridDX>
       </GridDX>
 
-      {/* {data.map((item) => {
-        return (
-          <TextFieldProfilesDX loading={isLoading} name={item.name} icon={item.icon} value={item.value} disabled />
-          );
-			})} */}
       <GridDX item xs={12}>
         <TextFieldProfilesDX
           name="FullName"

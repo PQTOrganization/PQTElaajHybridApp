@@ -35,8 +35,6 @@ const CarouselDX = (props: any) => {
         else return null;
       }}
       next={(now, prev) => {
-        console.log({ now, prev });
-
         if (props.totalSlides - 1 == prev) props.lastStepFunction();
       }}
     />

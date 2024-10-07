@@ -1,15 +1,7 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  useTheme,
-} from "@mui/material";
+import { Grid, Typography, useTheme } from "@mui/material";
 
+import GridDX from "../layout/griddx";
 import { formattedNumber } from "../../shared/globals";
-import LoadingTypography from "../controls/loadingtypography";
 
 const CoverageTable = (props: any) => {
   const rows = props.data ?? [];
@@ -17,66 +9,100 @@ const CoverageTable = (props: any) => {
   const theme = useTheme();
 
   return (
-    <TableContainer>
-      <Table
-        size="small"
+    <GridDX container>
+      <GridDX item xs={12}>
+        <Typography variant="h6" color="primary">
+          Coverage Detail
+        </Typography>
+      </GridDX>
+      <Grid
+        item
+        xs={12}
         sx={{
-          width: "100%",
-          "td, th": {
-            borderColor: theme.palette.success.main,
-            padding: "6px 10px",
-          },
-          fontSize: 14,
+          width: "100vw",
+          height: 0,
+          border: `1px solid black`,
         }}
-      >
-        <TableHead>
-          <TableRow>
-            <TableCell sx={{ paddingLeft: "0px !important" }}>
-              Benefit(s)
-            </TableCell>
-            <TableCell align="right">Room Limit</TableCell>
-            <TableCell align="right">Total Limit</TableCell>
-            <TableCell align="right" sx={{ paddingRight: "0px !important" }}>
-              Remaining Limit
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row: any, index: number) => (
-            <TableRow key={"cov_row_" + index}>
-              <TableCell
-                component="th"
-                scope="row"
-                sx={{ paddingLeft: "0px !important" }}
-              >
-                <LoadingTypography
-                  loading={loading}
-                  text={row.coverageDescription}
-                />
-              </TableCell>
-              <TableCell align="right">
-                <LoadingTypography
-                  loading={loading}
-                  text={formattedNumber(row.roomLimit)}
-                />
-              </TableCell>
-              <TableCell align="right">
-                <LoadingTypography
-                  loading={loading}
-                  text={formattedNumber(row.totalAmount)}
-                />
-              </TableCell>
-              <TableCell align="right" sx={{ paddingRight: "0px !important" }}>
-                <LoadingTypography
-                  loading={loading}
-                  text={formattedNumber(row.claimAmount)}
-                />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+      ></Grid>
+
+      <GridDX item xs={3}>
+        <Typography
+          variant="caption"
+          fontWeight="bold"
+          fontStyle="GillSansMTPro"
+        >
+          Benefit(s)
+        </Typography>
+      </GridDX>
+      <GridDX item xs={2} justifyContent="right">
+        <Typography
+          variant="caption"
+          fontWeight="bold"
+          sx={{ fontStyle: "GillSansMTPro", whiteSpace: "nowrap" }}
+        >
+          Room Limit
+        </Typography>
+      </GridDX>
+      <GridDX item xs={3} justifyContent="right">
+        <Typography
+          variant="caption"
+          fontWeight="bold"
+          fontStyle="GillSansMTPro"
+        >
+          Total Limit
+        </Typography>
+      </GridDX>
+      <GridDX item xs={4} justifyContent="right">
+        <Typography
+          variant="caption"
+          fontWeight="bold"
+          fontStyle="GillSansMTPro"
+        >
+          Remaining Limit
+        </Typography>
+      </GridDX>
+
+      {rows?.map((item: any, index: number) => (
+        <>
+          <GridDX item xs={3}>
+            <Typography
+              variant="caption"
+              fontWeight="bold"
+              fontStyle="GillSansMTPro"
+            >
+              {item?.coverageDescription}
+            </Typography>
+          </GridDX>
+          <GridDX item xs={2} justifyContent="right">
+            <Typography
+              variant="caption"
+              fontWeight="bold"
+              fontStyle="GillSansMTPro"
+            >
+              {formattedNumber(item?.roomLimit)}
+            </Typography>
+          </GridDX>
+          <GridDX item xs={3} justifyContent="right">
+            <Typography
+              variant="caption"
+              fontWeight="bold"
+              fontStyle="GillSansMTPro"
+            >
+              {formattedNumber(item?.totalAmount)}
+            </Typography>
+          </GridDX>
+          <GridDX item xs={4} justifyContent="right">
+            <Typography
+              variant="caption"
+              fontWeight="bold"
+              fontStyle="GillSansMTPro"
+            >
+              {formattedNumber(item?.claimAmount)}
+            </Typography>
+          </GridDX>
+        </>
+      ))}
+    </GridDX>
   );
 };
 

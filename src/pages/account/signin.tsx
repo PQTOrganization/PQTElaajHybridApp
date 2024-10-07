@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
-import { Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
 import GridDX from "../../components/layout/griddx";
 import ElaajLogo from "../../assets/elaaj_logo.png";
 import TextFieldDX from "../../components/controls/textfielddx";
 import LoadingButtonDX from "../../components/controls/loadingbuttondx";
-
 import { useAuthContext } from "../../context/authcontext";
 import { useErrorContext } from "../../context/errorcontext";
-
 import { login } from "../../shared/services/accountservice";
 import ButtonDX from "../../components/controls/buttondx";
 import { intimateDeviceForFBSetup } from "../../shared/globals";
 import CheckBoxDX from "../../components/controls/checkboxdx";
+import Hotline from "./hotline";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -82,6 +79,10 @@ const SignIn = () => {
 
     if (formValues.userName.length === 0)
       newErrors["userName"] = "User ID is required.";
+    else if (formValues.userName.length > 13)
+      newErrors["userName"] = "User ID cannot exceed 13 characters";
+    else if (formValues.userName.length < 13)
+      newErrors["userName"] = "User ID cannot be less 13 characters";
 
     if (formValues.password.length === 0)
       newErrors["password"] = "Password is required.";
@@ -91,24 +92,52 @@ const SignIn = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "Enter" && validateForm()) {
+      onLoginClick();
+    }
+  };
   return (
-    <GridDX container sx={{ width: "100%", height: "100%" }} rowSpacing={2}>
-      <GridDX item xs={12} justifyContent="center" sx={{ minHeight: 190 }}>
-        <img src={ElaajLogo} alt="Elaaj Logo" width={175} />
+    <GridDX
+      container
+      sx={{
+        mt: "40px",
+        padding: "5px",
+        maxWidth: 700,
+      }}
+      rowSpacing={1}
+      onKeyPress={handleKeyPress}
+    >
+      <GridDX item xs={12} justifyContent="center" sx={{ height: 120 }}>
+        <img src={ElaajLogo} alt="Elaaj Logo" width={100} height={100} />
       </GridDX>
       <GridDX item xs={12} justifyContent="center">
-        <Typography color="primary" sx={{ fontSize: 28, fontWeight: "bold" }}>
+        {/* <Typography color="primary" sx={{ fontSize: 28, fontWeight: "bold" }}>
           Sign In
-        </Typography>
+        </Typography> */}
       </GridDX>
       <GridDX item xs={12} justifyContent="center" sx={{ mt: 2, mb: 1 }}>
         <TextFieldDX
           name="userName"
-          label={"User ID | CNIC"}
+          label={"Username"}
           type="number"
           value={formValues.userName}
           onChange={handleInputChange}
           errorText={errors["userName"]}
+          variant="standard"
+          InputLabelProps={{
+            sx: {
+              color: "#8B0037",
+              textAlign: "center",
+              width: "100%",
+              transformOrigin: "top",
+            },
+          }}
+          sx={{
+            "& .MuiInput-underline:before": {
+              borderBottom: "2px solid #8B0037 !important", 
+            },
+          }}
         />
       </GridDX>
       <GridDX item xs={12} justifyContent="center">
@@ -119,6 +148,20 @@ const SignIn = () => {
           value={formValues.password}
           onChange={handleInputChange}
           errorText={errors["password"]}
+          variant="standard"
+          sx={{
+            "& .MuiInput-underline:before": {
+              borderBottom: "2px solid #8B0037 !important", 
+            },
+          }}
+          InputLabelProps={{
+            sx: {
+              color: "#8B0037",
+              textAlign: "center",
+              width: "100%",
+              transformOrigin: "top",
+            },
+          }}
         />
       </GridDX>
       <GridDX item xs={12}>
@@ -130,22 +173,38 @@ const SignIn = () => {
       </GridDX>
       <GridDX item xs={12} justifyContent="center">
         <LoadingButtonDX
-          fullWidth
           onClick={onLoginClick}
           loading={isLoading}
-          sx={{ mt: 4 }}
+          sx={{
+            mt: 1,
+            backgroundColor: "green !important",
+            width: "190px",
+            borderRadius: "50px",
+          }}
         >
-          Sign In
+          Login
         </LoadingButtonDX>
       </GridDX>
-      <GridDX item xs={12} justifyContent="flex-end">
+      <GridDX item xs={6}>
+        <ButtonDX
+          variant="text"
+          sx={{ mb: 4 }}
+          onClick={() => navigate("/register")}
+        >
+          Registration
+        </ButtonDX>
+      </GridDX>
+      <GridDX item xs={6} justifyContent="flex-end">
         <ButtonDX
           variant="text"
           sx={{ mb: 4 }}
           onClick={() => navigate("/forgetpassword")}
         >
-          Forget Password?
+          Forgot Password?
         </ButtonDX>
+      </GridDX>
+      <GridDX item xs={12} sx={{ alignItems: "center" }}>
+        <Hotline />
       </GridDX>
     </GridDX>
   );

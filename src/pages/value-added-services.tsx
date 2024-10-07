@@ -20,7 +20,6 @@ const ValueAddedServices = () => {
       .then((resp) => {
         setValueAddedData(resp);
         setLoading(false);
-        console.log(resp);
       })
       .catch((err) => console.log(err));
   };

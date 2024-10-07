@@ -13,7 +13,7 @@ const MarketingSlides = () => {
   const [slides] = useState(marketingSlidesData);
 
   useEffect(() => {
-    if (slides && slides.length === 0) navigate("/hotline", { replace: true });
+    if (slides && slides.length === 0) navigate("/signin", { replace: true });
   }, [slides]);
 
   const getSlide = (slideData: any) => {
@@ -37,7 +37,7 @@ const MarketingSlides = () => {
   };
 
   const gotoAppStart = () => {
-    navigate("/hotline", { replace: true });
+    navigate("/signin", { replace: true });
   };
 
   return (

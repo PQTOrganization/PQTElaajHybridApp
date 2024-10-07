@@ -82,8 +82,6 @@ const PanelHospitalCard = (props: any) => {
           color="secondary"
           size="small"
           onClick={() => showOnMapClick()}
-          // onClick={() => console.log(hospitalData)}
-          // onClick call to calculate route={() => showOnMapClick()}
         >
           Click to View Map
         </ButtonDX>

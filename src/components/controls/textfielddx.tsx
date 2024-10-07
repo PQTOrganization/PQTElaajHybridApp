@@ -52,7 +52,6 @@ const TextFieldDX = (props: any) => {
         error={isError}
         helperText={props.errorText ?? props.helperText}
         {...props}
-        //onInput={props.onInput ? props.onInput : toInputUppercase}
         inputProps={controlType === "number" ? { inputMode: "numeric" } : {}}
         onCut={allowCopyPaste ? null : handleCopyPaste}
         onCopy={allowCopyPaste ? null : handleCopyPaste}

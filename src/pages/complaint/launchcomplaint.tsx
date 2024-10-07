@@ -27,7 +27,6 @@ const LaunchComplaint = () => {
       const token = getToken();
       getComplaints(userDetails.policyNumber, userDetails.certNumber, token)
         .then((complaints) => {
-          console.log({ complaints });
           setComplaints(complaints);
         })
         .catch((err) => setError(err))
@@ -40,7 +39,6 @@ const LaunchComplaint = () => {
   };
 
   const showComplaint = (complainId: number) => {
-    alert(complainId);
     navigate("/manage-complaint", { state: { complainId } });
   };
 

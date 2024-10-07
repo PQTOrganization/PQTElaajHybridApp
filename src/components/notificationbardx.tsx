@@ -11,8 +11,6 @@ const NotificationBarDX = () => {
 
   useEffect(() => {
     if (error || info) {
-      console.log({ error }, { info });
-
       if (info) setAlertMessage(info);
       else if (error.message)
         setAlertMessage(error.message); // to show errors generate by throw

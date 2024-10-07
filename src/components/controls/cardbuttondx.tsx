@@ -1,40 +1,49 @@
-import { Paper, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
+import BoxDX from "../layout/boxdx"; // Assuming BoxDX is properly imported and used
 
 const CardButtonDX = (props: any) => {
   const theme = useTheme();
   const navigate = useNavigate();
 
   return (
-    <Paper
-      variant="outlined"
-      {...props}
-      sx={{
+    <div
+      style={{
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
         alignItems: "center",
-        height: 90,
-        width: 90,
-        mr: 1,
-        my: 1,
-        p: 1,
-        backgroundColor: "white",
-        borderColor: theme.palette.primary.main,
-        borderRadius: "12px",
-        color: theme.palette.primary.main,
-        cursor: "pointer",
-        ...props.style,
+        width: "100%",
       }}
-      onClick={() => (props.onClick ? props.onClick() : navigate(props.link))}
     >
-      {props.icon ?? null}
-      <br />
-      <Typography sx={{ textAlign: "center", fontSize: 12 }}>
+      <BoxDX
+        {...props}
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          cursor: "pointer",
+
+          ...props.style,
+        }}
+        onClick={() => (props.onClick ? props.onClick() : navigate(props.link))}
+      >
+        {props.icon ?? null}
+      </BoxDX>
+      <Typography
+        sx={{
+          textAlign: "center",
+          fontSize: 12,
+          color: theme.palette.primary.main,
+          fontWeight: "bold",
+          wordWrap: "break-word",
+          maxWidth: 100,
+        }}
+      >
         {props.label ?? ""}
       </Typography>
-    </Paper>
+    </div>
   );
 };
 

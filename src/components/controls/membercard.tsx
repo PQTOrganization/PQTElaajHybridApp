@@ -43,21 +43,6 @@ const MemberCard = (props: any) => {
             text={member?.employeeSRNumber}
           />
         </GridDX>
-        {/* <GridDX item xs={4}>
-          <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
-            Policy Period:
-          </Typography>
-        </GridDX>
-        <GridDX item xs={8} justifyContent="end">
-          <LoadingTypography
-            loading={loading}
-            text={
-              moment(member?.policyStartDate).format("DD/MM/YYYY") +
-              " to " +
-              moment(member?.policyEndDate).format("DD/MM/YYYY")
-            }
-          />
-        </GridDX> */}
       </GridDX>
     );
 };

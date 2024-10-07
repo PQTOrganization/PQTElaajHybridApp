@@ -13,6 +13,7 @@ const AccountTemplate = () => {
         padding: 16,
         flexDirection: "column",
         justifyContent: "center",
+        alignItems: "center",
       }}
     >
       <NotificationBarDX />

@@ -11,7 +11,7 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-
+import MenuIcon from "@mui/icons-material/Menu";
 import AccountIcon from "@mui/icons-material/AccountCircle";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import PaidIcon from "@mui/icons-material/Paid";
@@ -21,6 +21,13 @@ import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import UserIcon from "@mui/icons-material/AccountCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import LogoutIcon from "@mui/icons-material/Logout";
+import BenefitsAndLimits from "../../assets/icons/BenefitsAndLimits.png";
+import ClaimHistory from "../../assets/icons/ClaimHistory.png";
+import RecordCorrection from "../../assets/icons/RecordCorrection.png";
+import ValueAddedServices from "../../assets/icons/ValueAddedServices.png";
+import TakafulProduct from "../../assets/icons/TakafulProduct.png";
+import Elaaj_App_Screen from "../../assets/Elaaj_App_Screen.jpg";
+import pak_qatar_semi_circle_logo_2 from "../../assets/pak_qatar_semi_circle_logo_2.png";
 
 import GridDX from "./griddx";
 
@@ -37,27 +44,27 @@ const AppDrawerDX = () => {
     },
     {
       title: "Benefits & Limits",
-      icon: <PaidIcon fontSize="large" />,
+      icon: <img src={BenefitsAndLimits} style={{ width: "35px" }} />,
       link: "/benefits-limits",
     },
     {
       title: "Claim History",
-      icon: <ClaimHistoryIcon fontSize="large" />,
+      icon: <img src={ClaimHistory} style={{ width: "35px" }} />,
       link: "/claim-history",
     },
     {
       title: "Record Correction",
-      icon: <RecordCorrectionIcon fontSize="large" />,
+      icon: <img src={RecordCorrection} style={{ width: "35px" }} />,
       link: "/record-correction",
     },
     {
       title: "Value Added Services",
-      icon: <ErrorOutlineOutlinedIcon fontSize="large" />,
+      icon: <img src={ValueAddedServices} style={{ width: "35px" }} />,
       link: "/value-added-services",
     },
     {
       title: "Takaful Product & Solutions",
-      icon: <ErrorOutlineOutlinedIcon fontSize="large" />,
+      icon: <img src={TakafulProduct} style={{ width: "35px" }} />,
       link: "/products-solutions",
     },
     {
@@ -68,13 +75,13 @@ const AppDrawerDX = () => {
     {
       title: "Logout",
       icon: <LogoutIcon fontSize="large" />,
-      link: "/signin",
+      link: "/",
     },
   ];
 
   const navigate = useNavigate();
   const { getUserDetails, signOut } = useAuthContext();
-
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
   const [user, setUser] = useState<any>(null);
 
   const [state, setState] = useState({
@@ -83,6 +90,11 @@ const AppDrawerDX = () => {
 
   useEffect(() => {
     getUserDetails().then((user: any) => setUser(user));
+
+    const handleResize = () => setIsDesktop(window.innerWidth > 768);
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const toggleDrawer =
@@ -144,11 +156,19 @@ const AppDrawerDX = () => {
         color="primary"
         aria-label="account of current user"
       >
-        <AccountIcon />
+        <MenuIcon />
       </IconButton>
       <SwipeableDrawer
         PaperProps={{
-          sx: { width: "100%" },
+          sx: {
+            width: "100%",
+
+            backgroundImage: isDesktop
+              ? `url(${pak_qatar_semi_circle_logo_2})`
+              : `url(${Elaaj_App_Screen})`,
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+          },
         }}
         anchor={"right"}
         open={state["left"]}

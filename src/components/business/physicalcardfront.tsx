@@ -17,6 +17,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import GridDX from "../layout/griddx";
 import headerimg from "../../assets/physical-card-header.png";
+import cardBg from "../../assets/cardBg.png";
 
 const PhysicalCardFront = (props: any) => {
   const theme = useTheme();
@@ -64,10 +65,13 @@ const PhysicalCardFront = (props: any) => {
                   rowSpacing={1}
                   alignContent="flex-start"
                   sx={{
-                    color: "#8b0037",
-                    // transform: "rotate(90deg)",
-                    // transformOrigin: "center",
                     width: "750px",
+                    backgroundImage: `url(${cardBg})`,
+                    borderRadius: "30px",
+                    backgroundPosition: "center",
+                    border: "1px solid black",
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "100%",
                   }}
                 >
                   <GridDX item xs={12} className="card-header">
@@ -76,12 +80,6 @@ const PhysicalCardFront = (props: any) => {
                       style={{ flex: 1, maxWidth: "750px" }}
                     />
                   </GridDX>
-                  <GridDX item xs={12} sx={{ py: 1, px: 1 }}>
-                    <Typography style={{ color: "#8b0037" }}>
-                      Casualty and Medical Emergency Room Services covered for
-                      acute medical conditions only.
-                    </Typography>
-                  </GridDX>
 
                   <GridDX item xs={7} sx={{ py: 1, px: 1 }}>
                     <GridDX
@@ -89,7 +87,9 @@ const PhysicalCardFront = (props: any) => {
                       sx={{ flexDirection: "row", width: "100%" }}
                     >
                       <GridDX item xs={4}>
-                        <Typography>Participant Name:</Typography>
+                        <Typography sx={{ color: "#8B0037" }}>
+                          Participant Name:
+                        </Typography>
                       </GridDX>
                       <GridDX item xs={8}>
                         <Typography style={{ color: "black" }}>
@@ -97,58 +97,62 @@ const PhysicalCardFront = (props: any) => {
                         </Typography>
                       </GridDX>
                       <GridDX item xs={4}>
-                        <Typography>Employee Name:</Typography>
+                        <Typography sx={{ color: "#8B0037" }}>
+                          Employee Name:
+                        </Typography>
                       </GridDX>
                       <GridDX item xs={8}>
-                        <Typography>{member?.employeeName}</Typography>
+                        <Typography sx={{ color: "black" }}>
+                          {member?.employeeName}
+                        </Typography>
                       </GridDX>
                       <GridDX item xs={4}>
-                        <Typography>CNIC No:</Typography>
+                        <Typography sx={{ color: "#8B0037" }}>
+                          CNIC No:
+                        </Typography>
                       </GridDX>
                       <GridDX item xs={8}>
-                        <Typography>{member?.employeeCNIC}</Typography>
+                        <Typography sx={{ color: "black" }}>
+                          {member?.employeeCNIC}
+                        </Typography>
                       </GridDX>
                       <GridDX item xs={4}>
-                        <Typography>DOB :</Typography>
+                        <Typography sx={{ color: "#8B0037" }}>DOB :</Typography>
                       </GridDX>
                       <GridDX item xs={8}>
-                        <Typography>
+                        <Typography sx={{ color: "black" }}>
                           {moment(member?.employeeDateOfBirth).format(
                             "DD-MMM-yyyy"
                           )}
                         </Typography>
                       </GridDX>
                       <GridDX item xs={4}>
-                        <Typography>Cert No:</Typography>
-                      </GridDX>
-                      <GridDX item xs={8}>
-                        <Typography>{member?.employeeSRNumber}</Typography>
-                      </GridDX>
-                      <GridDX item xs={4}>
-                        <Typography>Emp No:</Typography>
-                      </GridDX>
-                      <GridDX item xs={8}>
-                        <Typography>{member?.employeeFolioId}</Typography>
-                      </GridDX>
-                      <GridDX item xs={4}>
-                        <Typography>Branch:</Typography>
-                      </GridDX>
-                      <GridDX item xs={8}>
-                        <Typography>XXX</Typography>
-                      </GridDX>
-                      <GridDX item xs={4}>
-                        <Typography>Room Limit:</Typography>
-                      </GridDX>
-                      <GridDX item xs={8}>
-                        <Typography>{member?.roomLimit}</Typography>
-                      </GridDX>
-                      <GridDX item xs={4}>
-                        <Typography>Valid up to:</Typography>
-                      </GridDX>
-                      <GridDX item xs={8}>
-                        <Typography>
-                          {moment(member?.policyEndDate).format("DD-MMM-yyyy")}
+                        <Typography sx={{ color: "#8B0037" }}>
+                          Cert No:
                         </Typography>
+                      </GridDX>
+                      <GridDX item xs={8}>
+                        <Typography sx={{ color: "black" }}>
+                          {member?.employeeSRNumber}
+                        </Typography>
+                      </GridDX>
+                      <GridDX item xs={4}>
+                        <Typography sx={{ color: "#8B0037" }}>
+                          Emp No:
+                        </Typography>
+                      </GridDX>
+                      <GridDX item xs={8}>
+                        <Typography sx={{ color: "black" }}>
+                          {member?.employeeFolioId}
+                        </Typography>
+                      </GridDX>
+                      <GridDX item xs={4}>
+                        <Typography sx={{ color: "#8B0037" }}>
+                          Branch:
+                        </Typography>
+                      </GridDX>
+                      <GridDX item xs={8}>
+                        <Typography sx={{ color: "black" }}>XXX</Typography>
                       </GridDX>
                     </GridDX>
                   </GridDX>
@@ -166,25 +170,33 @@ const PhysicalCardFront = (props: any) => {
                         rowSpacing={2}
                       >
                         <GridDX xs={6}>
-                          <Typography>Family Member</Typography>
+                          <Typography sx={{ color: "#8B0037" }}>
+                            Family Member
+                          </Typography>
                         </GridDX>
                         <GridDX xs={3}>
-                          <Typography>Age</Typography>
+                          <Typography sx={{ color: "#8B0037" }}>Age</Typography>
                         </GridDX>
                         <GridDX xs={3}>
-                          <Typography>Cert</Typography>
+                          <Typography sx={{ color: "#8B0037" }}>
+                            Cert
+                          </Typography>
                         </GridDX>
 
                         {familyMembers.map((m: any, i: number) => (
                           <>
                             <GridDX key={"empName_" + i} xs={6}>
-                              <Typography>{m.employeeName}</Typography>
+                              <Typography sx={{ color: "black" }}>
+                                {m.employeeName}
+                              </Typography>
                             </GridDX>
                             <GridDX key={"empAge_" + i} xs={3}>
-                              <Typography>{m.age}</Typography>
+                              <Typography sx={{ color: "black" }}>
+                                {m.age}
+                              </Typography>
                             </GridDX>
                             <GridDX key={"empSR_" + i} xs={3}>
-                              <Typography>
+                              <Typography sx={{ color: "black" }}>
                                 {m.employeeSRNumber.split("-")[1]}
                               </Typography>
                             </GridDX>
@@ -192,6 +204,46 @@ const PhysicalCardFront = (props: any) => {
                         ))}
                       </GridDX>
                     )}
+                  </GridDX>
+                  <GridDX container sx={{ pl: 1, pt: 1 }}>
+                    {" "}
+                    <GridDX item xs={4}>
+                      <Typography sx={{ color: "#8B0037" }}>
+                        Room Limit:
+                      </Typography>
+                    </GridDX>
+                    <GridDX item xs={8}>
+                      <Typography sx={{ color: "black" }}>
+                        {member?.roomLimit}
+                      </Typography>
+                    </GridDX>
+                    <GridDX item xs={4}>
+                      <Typography sx={{ color: "#8B0037" }}>
+                        Valid up to:
+                      </Typography>
+                    </GridDX>
+                    <GridDX item xs={8}>
+                      <Typography sx={{ color: "black" }}>
+                        {moment(member?.policyEndDate).format("DD-MMM-yyyy")}
+                      </Typography>
+                    </GridDX>
+                  </GridDX>
+                  <GridDX
+                    item
+                    xs={12}
+                    width="100%"
+                    padding="10px"
+                    backgroundColor="#8B0037"
+                    justifyContent="center"
+                    sx={{
+                      borderBottomLeftRadius: "30px",
+                      borderBottomRightRadius: "30px",
+                    }}
+                  >
+                    <Typography color="white" fontSize={15} fontStyle="italic">
+                      A Pak-Qatar Group Company: Pakistan's Premier and Pioneer
+                      Islamic Financial Services Group
+                    </Typography>
                   </GridDX>
                 </GridDX>
               </GridDX>
@@ -201,42 +253,33 @@ const PhysicalCardFront = (props: any) => {
         <Card
           sx={{
             width: 632,
-            transform: "scale(0.55)",
+            transform: "scale(0.58)",
             transformOrigin: "left top",
-            backgroundColor: "transparent",
+            backgroundImage: `url(${cardBg})`,
+            borderRadius: "30px",
+            backgroundSize: "100%",
+            border: "1px solid black",
+            backgroundRepeat: "no-repeat",
+
             boxShadow:
               "0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 0px 0px 0px rgba(0,0,0,0.12) !important",
           }}
         >
           <CardContent sx={{ p: 0 }}>
-            <GridDX container rowSpacing={0} sx={{ color: "#8b0037" }}>
+            <GridDX container>
               <GridDX item xs={12} className="card-header">
                 <img src={headerimg} />
               </GridDX>
-              <GridDX
-                item
-                xs={12}
-                sx={{ py: 1, px: 1, backgroundColor: "white" }}
-              >
+              <GridDX item xs={12} sx={{ py: 1, px: 1 }}>
                 <GridDX container rowSpacing={1}>
-                  <GridDX xs={12}>
-                    <Typography style={{ color: "#8b0037", fontSize: 8 }}>
-                      Casualty and Medical Emergency Room Services covered for
-                      acute medical conditions only.
-                    </Typography>
-                  </GridDX>
-                  <GridDX
-                    item
-                    xs={6}
-                    sx={{ py: 1, px: 1, backgroundColor: "white" }}
-                  >
+                  <GridDX item xs={6} sx={{ py: 1, px: 1 }}>
                     <GridDX
                       container
                       sx={{ flexDirection: "row", width: "100%" }}
                       rowSpacing={1}
                     >
                       <GridDX item xs={4}>
-                        <Typography sx={{ fontSize: 10 }}>
+                        <Typography sx={{ fontSize: 10, color: "#8B0037" }}>
                           Participant Name:
                         </Typography>
                       </GridDX>
@@ -246,73 +289,65 @@ const PhysicalCardFront = (props: any) => {
                         </Typography>
                       </GridDX>
                       <GridDX item xs={4}>
-                        <Typography sx={{ fontSize: 10 }}>
+                        <Typography sx={{ fontSize: 10, color: "#8B0037" }}>
                           Employee Name:
                         </Typography>
                       </GridDX>
                       <GridDX item xs={8}>
-                        <Typography style={{ fontSize: 10 }}>
+                        <Typography style={{ color: "black", fontSize: 10 }}>
                           {member?.employeeName}
                         </Typography>
                       </GridDX>
                       <GridDX item xs={4}>
-                        <Typography sx={{ fontSize: 10 }}>CNIC No:</Typography>
+                        <Typography sx={{ fontSize: 10, color: "#8B0037" }}>
+                          CNIC No:
+                        </Typography>
                       </GridDX>
                       <GridDX item xs={8}>
-                        <Typography style={{ fontSize: 10 }}>
+                        <Typography style={{ color: "black", fontSize: 10 }}>
                           {member?.employeeCNIC}
                         </Typography>
                       </GridDX>
                       <GridDX item xs={4}>
-                        <Typography sx={{ fontSize: 10 }}>DOB :</Typography>
+                        <Typography sx={{ fontSize: 10, color: "#8B0037" }}>
+                          DOB :
+                        </Typography>
                       </GridDX>
                       <GridDX item xs={8}>
-                        <Typography style={{ fontSize: 10 }}>
+                        <Typography style={{ color: "black", fontSize: 10 }}>
                           {moment(member?.employeeDateOfBirth).format(
                             "DD-MMM-yyyy"
                           )}
                         </Typography>
                       </GridDX>
                       <GridDX item xs={4}>
-                        <Typography sx={{ fontSize: 10 }}>Cert No:</Typography>
+                        <Typography sx={{ fontSize: 10, color: "#8B0037" }}>
+                          Cert No:
+                        </Typography>
                       </GridDX>
                       <GridDX item xs={8}>
-                        <Typography style={{ fontSize: 10 }}>
+                        <Typography style={{ color: "black", fontSize: 10 }}>
                           {member?.employeeSRNumber}
                         </Typography>
                       </GridDX>
                       <GridDX item xs={4}>
-                        <Typography sx={{ fontSize: 10 }}>Emp No:</Typography>
+                        <Typography sx={{ fontSize: 10, color: "#8B0037" }}>
+                          Emp No:
+                        </Typography>
                       </GridDX>
                       <GridDX item xs={8}>
-                        <Typography style={{ fontSize: 10 }}>
+                        <Typography style={{ color: "black", fontSize: 10 }}>
                           {member?.employeeFolioId}
                         </Typography>
                       </GridDX>
                       <GridDX item xs={4}>
-                        <Typography sx={{ fontSize: 10 }}>Branch:</Typography>
-                      </GridDX>
-                      <GridDX item xs={8}>
-                        <Typography style={{ fontSize: 10 }}>XXX</Typography>
-                      </GridDX>
-                      <GridDX item xs={4}>
-                        <Typography sx={{ fontSize: 10 }}>
-                          Room Limit:
+                        <Typography sx={{ fontSize: 10, color: "#8B0037" }}>
+                          Branch:
                         </Typography>
                       </GridDX>
                       <GridDX item xs={8}>
-                        <Typography style={{ fontSize: 10 }}>
-                          {member?.roomLimit}
-                        </Typography>
-                      </GridDX>
-                      <GridDX item xs={4}>
-                        <Typography sx={{ fontSize: 10 }}>
-                          Valid up to:
-                        </Typography>
-                      </GridDX>
-                      <GridDX item xs={8}>
-                        <Typography style={{ fontSize: 10 }}>
-                          {moment(member?.policyEndDate).format("DD-MMM-yyyy")}
+                        <Typography style={{ color: "black", fontSize: 10 }}>
+                          XXX
                         </Typography>
                       </GridDX>
                     </GridDX>
@@ -321,7 +356,7 @@ const PhysicalCardFront = (props: any) => {
                   <GridDX
                     item
                     xs={6}
-                    style={{ padding: 8, backgroundColor: "white" }}
+                    style={{ padding: 8 }}
                     alignItems="flex-start"
                   >
                     {familyMembers && familyMembers.length > 0 && (
@@ -330,36 +365,51 @@ const PhysicalCardFront = (props: any) => {
                         sx={{
                           flexDirection: "row",
                           width: "100%",
-                          backgroundColor: "white",
                         }}
                         rowSpacing={1}
                       >
                         <GridDX xs={6}>
-                          <Typography style={{ fontSize: 10 }}>
+                          <Typography
+                            style={{ fontSize: 10, color: "#8B0037" }}
+                          >
                             Family Member
                           </Typography>
                         </GridDX>
                         <GridDX xs={3}>
-                          <Typography style={{ fontSize: 10 }}>Age</Typography>
+                          <Typography
+                            style={{ fontSize: 10, color: "#8B0037" }}
+                          >
+                            Age
+                          </Typography>
                         </GridDX>
                         <GridDX xs={3}>
-                          <Typography style={{ fontSize: 10 }}>Cert</Typography>
+                          <Typography
+                            style={{ fontSize: 10, color: "#8B0037" }}
+                          >
+                            Cert
+                          </Typography>
                         </GridDX>
 
                         {familyMembers.map((m: any, i: number) => (
                           <>
                             <GridDX key={"empName_" + i} xs={6}>
-                              <Typography style={{ fontSize: 10 }}>
+                              <Typography
+                                style={{ fontSize: 10, color: "black" }}
+                              >
                                 {m.employeeName}
                               </Typography>
                             </GridDX>
                             <GridDX key={"empAge_" + i} xs={3}>
-                              <Typography style={{ fontSize: 10 }}>
+                              <Typography
+                                style={{ fontSize: 10, color: "black" }}
+                              >
                                 {m.age}
                               </Typography>
                             </GridDX>
                             <GridDX key={"empSR_" + i} xs={3}>
-                              <Typography style={{ fontSize: 10 }}>
+                              <Typography
+                                style={{ fontSize: 10, color: "black" }}
+                              >
                                 {m.employeeSRNumber.split("-")[1]}
                               </Typography>
                             </GridDX>
@@ -368,7 +418,47 @@ const PhysicalCardFront = (props: any) => {
                       </GridDX>
                     )}
                   </GridDX>
+                  <GridDX container sx={{ pl: 1, pt: 2 }}>
+                    {" "}
+                    <GridDX item xs={4}>
+                      <Typography style={{ fontSize: 10, color: "#8B0037" }}>
+                        Room Limit:
+                      </Typography>
+                    </GridDX>
+                    <GridDX item xs={8}>
+                      <Typography sx={{ color: "black", fontSize: 10 }}>
+                        {member?.roomLimit}
+                      </Typography>
+                    </GridDX>
+                    <GridDX item xs={4}>
+                      <Typography style={{ fontSize: 10, color: "#8B0037" }}>
+                        Valid up to:
+                      </Typography>
+                    </GridDX>
+                    <GridDX item xs={8}>
+                      <Typography sx={{ color: "black", fontSize: 10 }}>
+                        {moment(member?.policyEndDate).format("DD-MMM-yyyy")}
+                      </Typography>
+                    </GridDX>
+                  </GridDX>
                 </GridDX>
+              </GridDX>
+              <GridDX
+                item
+                xs={12}
+                width="100%"
+                padding="10px"
+                backgroundColor="#8B0037"
+                justifyContent="center"
+                sx={{
+                  borderBottomLeftRadius: "30px",
+                  borderBottomRightRadius: "30px",
+                }}
+              >
+                <Typography color="white" fontSize={12} fontStyle="italic">
+                  A Pak-Qatar Group Company: Pakistan's Premier and Pioneer
+                  Islamic Financial Services Group
+                </Typography>
               </GridDX>
             </GridDX>
           </CardContent>

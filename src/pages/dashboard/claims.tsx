@@ -51,7 +51,6 @@ const Claims = () => {
     getClaimSummary(policyNo, empSRNumber, employeeCode, token)
       .then((resp) => {
         setSummary(resp);
-        console.log("Summary", resp);
       })
       .catch((err) => setError(err));
   };
@@ -90,7 +89,7 @@ const Claims = () => {
   return (
     <GridDX
       container
-      sx={{ width: "100%", alignContent: "flex-start", height: "100%" }}
+      sx={{ width: "100%", alignContent: "flex-start", height: "100%", overflowY:"auto"}}
       rowSpacing={2}
       columnSpacing={1}
     >
@@ -113,12 +112,22 @@ const Claims = () => {
         <ClaimBox title="Total Paid Amount" value={summary.totalPaidAmount} />
       </GridDX>
       <GridDX item xs={12} justifyContent="space-evenly" sx={{ py: 2 }}>
-        <ButtonDX color="success" onClick={() => navigate("/create-claim")}>
+        <ButtonDX
+          color="success"
+          onClick={() => navigate("/create-claim")}
+          sx={{
+            backgroundColor: "green !important",
+            width: "190px",
+            borderRadius: "50px",
+          }}
+        >
           Submit Claim
         </ButtonDX>
       </GridDX>
       <GridDX item xs={12}>
-        <Typography sx={{ fontSize: 24 }}>Recent Claims</Typography>
+        <Typography sx={{ fontSize: 24 }} color="primary">
+          Recent Claims
+        </Typography>
       </GridDX>
       <GridDX item xs={12} sx={{ flexDirection: "column" }}>
         {data !== null ? (

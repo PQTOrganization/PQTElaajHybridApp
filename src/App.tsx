@@ -54,17 +54,19 @@ import DownloadPage from "./pages/download";
 import WebPage from "./pages/webpage";
 import WebPageViewTemplate from "./templates/webpageviewtemplates";
 
-// const Home = lazy(() => import("./pages/dashboard/home"));
-// const Claims = lazy(() => import("./pages/dashboard/claims"));
-// const PanelHospitals = lazy(() => import("./pages/dashboard/panelhospitals"));
-// const Call = lazy(() => import("./pages/dashboard/call"));
+import { useConfigContext } from "./context/configcontext";
+import Registration from "./pages/account/registration";
+import Verification from "./pages/verification";
+import TeleDoc from "./pages/teledoc";
 
 const App = () => {
+  const { configLoaded } = useConfigContext();
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getMarketingSlides().finally(() => setLoading(false));
-  }, []);
+    if (configLoaded) getMarketingSlides().finally(() => setLoading(false));
+  }, [configLoaded]);
 
   if (loading) return <Loading />;
   else
@@ -114,11 +116,8 @@ const ApplicationRoutes = () => {
   const messageFromApp = async (messageFromSite: any) => {
     const message = JSON.parse(messageFromSite.data);
 
-    console.log({ message });
-
     switch (message.key) {
       case "firebaseToken":
-        // await delay(5000);
         document.dispatchEvent(
           new CustomEvent("firebaseToken", { detail: message.data })
         );
@@ -154,7 +153,6 @@ const ApplicationRoutes = () => {
   };
 
   const saveFirebaseToken = async (event: any) => {
-    console.log("Save firebase token is called");
     const userDetails = await getUserDetails();
 
     if (userDetails && userDetails.userId)
@@ -175,10 +173,14 @@ const ApplicationRoutes = () => {
       <Route element={<MarketingTemplate />}>
         <Route path="/" element={<MarketingSlides />} />
       </Route>
+
+      {/* <Route path="/" element={<SignIn />} /> */}
       <Route element={<AccountTemplate />}>
-        <Route path="/hotline" element={<Hotline />} />
+        {/* <Route path="/hotline" element={<Hotline />} /> */}
         <Route path="/signin" element={<SignIn />} />
         <Route path="/forgetpassword" element={<ForgetPassword />} />
+        <Route path="/register" element={<Registration />} />
+        <Route path="/verification" element={<Verification />} />
       </Route>
 
       <Route element={<DownloadPage />} path="/download" />
@@ -227,6 +229,7 @@ const ApplicationRoutes = () => {
         <Route path="/value-added-services" element={<ValueAddedServices />} />
         <Route path="/view-card" element={<ViewCard />} />
         <Route path="/opd-reimburse" element={<OPDReimburese />} />
+        <Route path="/teledoc" element={<TeleDoc />} />
       </Route>
 
       <Route

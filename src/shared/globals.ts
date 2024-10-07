@@ -1,6 +1,4 @@
-export const DOC_SIZE = 20;
-export const minimumDocs = 1;
-export const maximumDocs = 3;
+import FileResizer from "react-image-file-resizer";
 
 export enum claimStatus {
   "Pending" = 1,
@@ -32,6 +30,23 @@ export const formattedNumber = (numberValue: number) => {
   if (numberValue) return Intl.NumberFormat().format(numberValue);
   else return 0;
 };
+
+export function readableFileSize(attachmentSize: number) {
+  const DEFAULT_SIZE = 0;
+  const fileSize = attachmentSize ?? DEFAULT_SIZE;
+
+  if (!fileSize) {
+    return `${DEFAULT_SIZE} KB`;
+  }
+
+  const sizeInKb = fileSize / 1024;
+
+  if (sizeInKb > 1024) {
+    return `${(sizeInKb / 1024).toFixed(1)} MB`;
+  } else {
+    return `${sizeInKb.toFixed(1)} KB`;
+  }
+}
 
 export const handleCall = (event: any, number: string = "021111825238") => {
   const win: any = window;
@@ -105,4 +120,46 @@ export const openURLInBrowser = (url: string) => {
         JSON.stringify({ type: "webpage", data: url })
       );
     else window.open(url, "_new");
+};
+
+export const openMedIQUrl = (userData: string) => {
+  const win: any = window;
+
+  if (win?.ReactNativeWebView)
+    win.ReactNativeWebView.postMessage(
+      JSON.stringify({ type: "openmediq", data: userData })
+    );
+};
+
+export const openGoogleMapsApp = (directionsData: string) => {
+  const win: any = window;
+
+  if (win?.ReactNativeWebView)
+    win.ReactNativeWebView.postMessage(
+      JSON.stringify({ type: "openmaps", data: directionsData })
+    );
+};
+
+export const resizeFile = (e: any) =>
+  new Promise((resolve) => {
+    FileResizer.imageFileResizer(
+      e,
+      1024,
+      800,
+      "JPEG",
+      100,
+      0,
+      (uri) => {
+        resolve(uri);
+      },
+      "base64"
+    );
+  });
+
+export const getBase64ImageSizeInMB = (image: any) => {
+  console.log("image", image);
+  const stringLength = image.length - "data:image/png;base64,".length;
+  const sizeInBytes = 4 * Math.ceil(stringLength / 3) * 0.5624896334383812;
+  const sizeInMB = sizeInBytes / 1048576;
+  return sizeInMB;
 };

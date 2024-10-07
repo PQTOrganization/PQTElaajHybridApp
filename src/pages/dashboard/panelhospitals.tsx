@@ -57,8 +57,6 @@ const PanelHospitals = () => {
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
-      console.log({ position });
-
       const current = {
         lat: position.coords.latitude,
         lng: position.coords.longitude,
@@ -90,7 +88,6 @@ const PanelHospitals = () => {
           newHospitals.sort((a: any, b: any) => a.distance - b.distance);
 
           setPanelHospitals(newHospitals);
-          console.log("newHospitals", newHospitals);
         })
         .catch((err) => setError(err))
         .finally(() => setLoading(false));
@@ -122,7 +119,7 @@ const PanelHospitals = () => {
           <Tab icon={<MapViewIcon />} iconPosition="start" label="Map View" />
         </Tabs>
       </GridDX>
-      <GridDX item xs={12} sx={{ pt: 1 }}>
+      <GridDX item xs={12} >
         <TabPanel value={viewType} index={0}>
           <HospitalCardList
             hospitals={panelHospitals}

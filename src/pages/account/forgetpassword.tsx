@@ -46,7 +46,7 @@ const ForgetPassword = () => {
           if (response.errorNumber === 0) setError(response.message);
           else {
             setInfo(response.message);
-            navigate("/signin");
+            navigate("/");
           }
         })
         .catch((err) => setError(err))
@@ -72,7 +72,7 @@ const ForgetPassword = () => {
       </GridDX>
       <GridDX item xs={12} justifyContent="center">
         <Typography color="primary" sx={{ fontSize: 28, fontWeight: "bold" }}>
-          Forget Password
+          Forgot Password
         </Typography>
       </GridDX>
       <GridDX item xs={12} justifyContent="center">
@@ -89,7 +89,18 @@ const ForgetPassword = () => {
           value={formValues.userName}
           onChange={handleInputChange}
           errorText={errors["userName"]}
+          variant="standard"
+          sx={{ borderBottom: "1px solid #8B0037" }}
+          InputLabelProps={{
+            sx: {
+              color: "#8B0037",
+              textAlign: "center",
+              width: "100%",
+              transformOrigin: "top",
+            },
+          }}
         />
+        
       </GridDX>
       <GridDX item xs={12} justifyContent="center">
         <LoadingButtonDX

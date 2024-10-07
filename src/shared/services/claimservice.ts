@@ -117,7 +117,6 @@ export const createIntimationRequest = async (
     requestType: 3,
     certificateNumber: certificateNumber,
     employeeCode: employeeCode,
-    // claimType: claimType,
     hospitalId: hospitalId,
     hospitalName: hospitalName,
     claimAmount: null,

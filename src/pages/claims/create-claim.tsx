@@ -20,12 +20,18 @@ import {
 import { getPanelHospitalsLookup } from "../../shared/services/commonservice";
 import { getMembers } from "../../shared/services/memberservice";
 import { createClaimRequest } from "../../shared/services/claimservice";
-import { formattedNumber } from "../../shared/globals";
+import {
+  formattedNumber,
+  getBase64ImageSizeInMB,
+  readableFileSize,
+} from "../../shared/globals";
+import { useConfigContext } from "../../context/configcontext";
 
 const CreateClaim = () => {
   const navigate = useNavigate();
   const { getUserDetails, isAdminUser, getToken } = useAuthContext();
   const { setInfo, setError } = useErrorContext();
+  const { CUMULATIVE_DOC_SIZE } = useConfigContext();
 
   const defaultValues = {
     claimTypeId: "",
@@ -44,8 +50,9 @@ const CreateClaim = () => {
   const [userDetails, setUserDetails] = useState<any>({});
   const [members, setMembers] = useState<any>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [claimLimit, setClaimLimit] = useState(10000);
+  const [claimLimit, setClaimLimit] = useState(20000);
   const [selectedParticipant, setSelectedParticipant] = useState<any>(null);
+  const [totalSize, setTotalSize] = useState("0");
 
   useEffect(() => {
     getUserDetails().then((userDetails: any) => {
@@ -71,6 +78,11 @@ const CreateClaim = () => {
     }
   }, [selectedParticipant]);
 
+  useEffect(() => {
+    let totalSize = calculateCumulativeSize();
+    setTotalSize(readableFileSize(totalSize));
+  }, [docs]);
+
   const addDocument = async (newDocument: any) => {
     const currentList: any[] = [...docs];
     currentList.push(newDocument);
@@ -94,9 +106,13 @@ const CreateClaim = () => {
     });
 
     if (name === "claimTypeId") {
-      console.log({ value });
-      if (value === "RGHOPSV01" || value === "RGHOPV01") setClaimLimit(20000);
-      else setClaimLimit(10000);
+      if (
+        // value === "RGHOPSV01" ||
+        // value === "RGHOPV01" ||
+        value === "GH202207589132"
+      )
+        setClaimLimit(25000);
+      else setClaimLimit(20000);
     }
   };
 
@@ -115,14 +131,21 @@ const CreateClaim = () => {
     if (validateForm()) createClaim();
   };
 
+  const calculateCumulativeSize = () => {
+    let cumSize = 0;
+    for (let index = 0; index < docs.length; index++) {
+      const element = docs[index];
+      cumSize += element.size; //getBase64ImageSizeInMB(element.document);
+    }
+    console.log("cum size", cumSize);
+    return cumSize;
+  };
+
   const validateForm = () => {
     const newErrors: any = {};
 
     if (formValues.claimTypeId === "")
       newErrors["claimTypeId"] = "Claim type is required.";
-
-    // if (formValues.panelHospitalId === "")
-    //   newErrors["panelHospitalId"] = "Panel Hospital is required.";
 
     if (!formValues.claimAmount || formValues.claimAmount === 0)
       newErrors["claimAmount"] = "Claim amount is required.";
@@ -133,6 +156,14 @@ const CreateClaim = () => {
 
     if (docs.length === 0)
       newErrors["documents"] = "Atleast one document must be attached.";
+    else {
+      let cumSize = calculateCumulativeSize();
+      if (cumSize >= CUMULATIVE_DOC_SIZE)
+        newErrors["documents"] =
+          "Size of all documents is more than the allowed size of " +
+          CUMULATIVE_DOC_SIZE +
+          " MB.";
+    }
 
     setErrors(newErrors);
 
@@ -164,7 +195,6 @@ const CreateClaim = () => {
       members[selectedIndex].employeeSRNumber,
       employeeCode,
       formValues.claimTypeId,
-      // panelHospital.id.toString(),
       null,
       Number(formValues.claimAmount),
       documents,
@@ -176,6 +206,20 @@ const CreateClaim = () => {
       })
       .catch((err) => setError(err))
       .finally(() => setSendingRequest(false));
+  };
+
+  const loadClaimTypes = async (certNumber: string) => {
+    const token = getToken();
+    return getAllClaimTypes(certNumber, token).then((response) => {
+      setClaimTypes(
+        response.map((item: any) => {
+          return {
+            text: item.benefitDescription,
+            value: item.benefitCode,
+          };
+        })
+      );
+    });
   };
 
   const loadMembersData = async (
@@ -190,16 +234,7 @@ const CreateClaim = () => {
       getMembers(policyNumber, employeeCode, token).then((members) =>
         setMembers(members)
       ),
-      getAllClaimTypes(certNumber, token).then((response) => {
-        setClaimTypes(
-          response.map((item: any) => {
-            return {
-              text: item.benefitDescription,
-              value: item.benefitCode,
-            };
-          })
-        );
-      }),
+      loadClaimTypes(certNumber),
       getPanelHospitalsLookup(token).then((response) => {
         setHospitals(response);
       }),
@@ -212,6 +247,7 @@ const CreateClaim = () => {
   };
 
   const onMemberChange = (membersIndex: any) => {
+    loadClaimTypes(members[membersIndex].employeeSRNumber);
     setSelectedIndex(membersIndex);
   };
 
@@ -257,21 +293,6 @@ const CreateClaim = () => {
               required
             />
           </GridDX>
-          {/* <GridDX xs={12}>
-        <AutoCompleteListDX
-          id="panelHospitalId"
-          name="panelHospitalId"
-          label="Hospital/Clinic"
-          list={hospitals}
-          value={formValues.panelHospitalId}
-          onChange={handleHospitalChange}
-          error={errors["panelHospitalId"] ? true : false}
-          errorText={errors["panelHospitalId"]}
-          InputLabelProps={{ style: { pointerEvents: "auto" } }}
-          loading={loading}
-          required
-        />
-      </GridDX> */}
           <GridDX item xs={12} sx={{ flexDirection: "column" }}>
             <TextFieldDX
               name="claimAmount"
@@ -302,7 +323,14 @@ const CreateClaim = () => {
               all relevant document
             </Typography>
           </GridDX>
-          <GridDX xs={12}>Attach Document(s)</GridDX>
+          <GridDX xs={6}>Attach Document(s)</GridDX>
+          <GridDX xs={6} justifyContent="right">
+            <Typography
+              sx={{ color: "#8B0037", fontWeight: "bold", textAlign: "right" }}
+            >
+              {totalSize + "/" + CUMULATIVE_DOC_SIZE + " MB"}{" "}
+            </Typography>
+          </GridDX>
           <GridDX xs={12}>
             {errors["documents"] && (
               <Typography

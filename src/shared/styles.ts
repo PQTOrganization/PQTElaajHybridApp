@@ -23,7 +23,6 @@ export const useStyles = makeStyles((theme: Theme) =>
         color: theme.palette.primary.main,
         fontWeight: "bold",
       },
-      // orginal: transform: translate(0, 1.5px) scale(0.75);
       "& .MuiInputLabel-shrink": {
         transform: "translate(0, calc(-75% + 6px)) scale(0.75)",
       },

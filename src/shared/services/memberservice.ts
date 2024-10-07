@@ -28,8 +28,6 @@ export const getMemberPolicyPeriods = async (
   var Data = await Api(route, null, "GET", token);
   return Data;
 };
-// employeCode FolioID
-// employee Sr Number : certificate
 
 export const CorrectionRecord = async (
   userEmailAddress: string,

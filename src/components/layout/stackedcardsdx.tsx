@@ -38,13 +38,10 @@ const StackedCards = (props: any) => {
 
   const checkDirection = () => {
     if (touchendY < touchstartY) swipeUp();
-    //if (touchendY > touchstartY) swipeDown();
   };
 
   const swipeUp = () => {
     if (cardsData.length > 1) {
-      console.log("swipe up");
-
       const origData = [...cardsData];
       const lastElement = origData.pop(); // last element is on the top
       origData.unshift(lastElement);

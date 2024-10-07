@@ -82,7 +82,7 @@ const MemberSelector = forwardRef((props: any, ref: any) => {
               primary={memberNameWithRelation(members[selectedIndex])}
             />
             <IconButton edge="end">
-              <ArrowDropDownIcon />
+              <ArrowDropDownIcon sx={{ color: "#8B0037" }} />
             </IconButton>
           </ListItemButton>
         </List>
@@ -92,7 +92,6 @@ const MemberSelector = forwardRef((props: any, ref: any) => {
           open={open}
           onClose={handleClose}
           sx={{ width: "100%" }}
-          // onChange={onChange}
         >
           {members.map((m: any, index: number) => (
             <MenuItem

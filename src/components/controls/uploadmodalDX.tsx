@@ -23,7 +23,6 @@ const UploadModalDX = (props: any) => {
 
   const onChangeHandler = async (event: any) => {
     const image = await toBase64(event.target.files[0]);
-    console.log(image);
     setImg(image);
     setFileName(event.target.files[0].name);
   };
@@ -39,9 +38,6 @@ const UploadModalDX = (props: any) => {
   const delay = (ms: any) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const openDialog = (event: any) => {
-    // if (event.detail == 'profile'&& inputRef!=null) {
-    // 	inputRef.current.click();
-    // }
     if (inputRef.current != null && event.detail == "profile") {
       inputRef.current.click();
     }
@@ -81,10 +77,6 @@ const UploadModalDX = (props: any) => {
         )}
         <GridDX item xs={12} justifyContent="center">
           <input
-            // ref={async (el) => {
-            //   inputRef.current = el;
-            //   el.click();
-            // }}
             accept="image/*"
             type="file"
             name="file"
@@ -100,7 +92,6 @@ const UploadModalDX = (props: any) => {
           {img == null ? (
             <ButtonDX
               loading={loading}
-              // color="success"
               style={{
                 width: "80%",
                 marginTop: "0",
@@ -122,7 +113,6 @@ const UploadModalDX = (props: any) => {
                 backgroundColor: "black",
               }}
               onClick={processImage}
-              // text={'Upload'}
             >
               UPLOAD
             </ButtonDX>

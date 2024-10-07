@@ -25,7 +25,9 @@
     "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-easy-crop": "^5.0.8",
     "react-geocode": "^0.2.3",
+    "react-image-file-resizer": "^0.4.8",
     "react-infinite-scroll-component": "^6.1.0",
     "react-loading-skeleton": "^3.1.1",
     "react-material-ui-carousel": "^3.4.2",
@@ -60,5 +62,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react-easy-crop": "^2.0.0"
   }
 }

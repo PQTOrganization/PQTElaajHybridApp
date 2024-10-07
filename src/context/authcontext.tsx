@@ -89,8 +89,6 @@ const AuthProvider = ({ children }: AuxProps) => {
         })
       );
     else localStorage.removeItem(rememberMeSessionName);
-
-    console.log("data", data);
   };
 
   const signOut = () => {
@@ -110,7 +108,6 @@ const AuthProvider = ({ children }: AuxProps) => {
         const sessionInfoJSON = JSON.parse(sessionInfo);
         return sessionInfoJSON;
       } catch (ex) {
-        console.log("Error parsing session info:", ex);
         return {};
       }
     }
@@ -131,7 +128,6 @@ const AuthProvider = ({ children }: AuxProps) => {
           password: window.atob(rememberMeInfoJSON.password),
         };
       } catch (ex) {
-        console.log("Error parsing remember me info:", ex);
         return null;
       }
     } else return null;
@@ -144,9 +140,7 @@ const AuthProvider = ({ children }: AuxProps) => {
       try {
         const sessionInfoJSON = JSON.parse(sessionInfo);
         return sessionInfoJSON.role === "admin";
-      } catch (ex) {
-        console.log("Error parsing session info:", ex);
-      }
+      } catch (ex) {}
     }
 
     return false;

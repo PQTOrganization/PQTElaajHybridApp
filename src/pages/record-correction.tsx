@@ -8,6 +8,7 @@ import { PhotoCamera } from "@mui/icons-material";
 
 import { useErrorContext } from "../context/errorcontext";
 import { useAuthContext } from "../context/authcontext";
+import { useConfigContext } from "../context/configcontext";
 
 import GridDX from "../components/layout/griddx";
 import MemberSelector from "../components/business/memberselector";
@@ -25,6 +26,7 @@ const RecordCorrection = () => {
   const navigate = useNavigate();
   const { getUserDetails, getToken } = useAuthContext();
   const { setError, setInfo } = useErrorContext();
+  const { IMAGE_SIZE } = useConfigContext();
 
   const [members, setMembers] = useState<any>([]);
   const [userData, setUserData] = useState<any>(null);
@@ -46,25 +48,75 @@ const RecordCorrection = () => {
 
       getMembers(userDetails.policyNumber, userDetails.employeeCode, token)
         .then((members) => {
-          console.log(members);
           setMembers(members);
           setUserData(members[0]);
         })
         .catch((err) => setError(err))
         .finally(() => {
           setIsLoading(false);
-          console.log(userData);
         });
     });
   }, []);
+
+  const calculatePercentIncrease = (sizeInMB: any) => {
+    const numerator = Math.abs(sizeInMB - IMAGE_SIZE);
+    const denominator = (sizeInMB + IMAGE_SIZE) / 2;
+    const percent = Math.round((numerator / denominator) * 100) / 100;
+
+    return percent;
+  };
+
+  const getBase64ImageSizeInMB = (image: any) => {
+    const stringLength = image.length - "data:image/png;base64,".length;
+    const sizeInBytes = 4 * Math.ceil(stringLength / 3) * 0.5624896334383812;
+    const sizeInMB = sizeInBytes / 1048576;
+    return sizeInMB;
+  };
+
+  const reduceImageSizeToLimit = (originalImage: any, sizeInMB: any) => {
+    return new Promise((resolve, reject) => {
+      const percentInc = calculatePercentIncrease(sizeInMB);
+
+      var image = new Image();
+      image.src = originalImage;
+      image.onload = () => {
+        const oc = document.createElement("canvas");
+        const octx = oc.getContext("2d");
+
+        oc.width = image.width * (1 - percentInc);
+        oc.height = image.height * (1 - percentInc);
+
+        // step 2, resize to size
+        octx?.drawImage(image, 0, 0, oc.width, oc.height);
+
+        const newImage = oc.toDataURL();
+        const newSizeInMB = getBase64ImageSizeInMB(newImage);
+        console.log({ newSizeInMB });
+
+        return resolve(newImage);
+      };
+      image.onerror = (error) => reject(error);
+    });
+  };
 
   const UpdateProfile = async (capturedImage: any, fileName: any) => {
     setimage(capturedImage);
     var imageFile: any = dataURLtoBlob(capturedImage);
     var profileImage = await toBase64(imageFile);
+
+    const sizeInMB = getBase64ImageSizeInMB(profileImage);
+
+    let reducedImage = profileImage;
+
+    if (sizeInMB > IMAGE_SIZE) {
+      console.log("The captured Image is more than " + IMAGE_SIZE + "MB");
+
+      reducedImage = await reduceImageSizeToLimit(profileImage, sizeInMB);
+    }
+
     setUserData({
       ...userData,
-      ["profileImage"]: profileImage,
+      ["profileImage"]: reducedImage,
     });
   };
 
@@ -78,7 +130,6 @@ const RecordCorrection = () => {
       ...userData,
       [name]: value,
     });
-    console.log(userData);
   };
 
   const onHandleDateChange = (fieldName: string, dateValue: Date) => {
@@ -168,7 +219,6 @@ const RecordCorrection = () => {
             onClick={() => setUploadModal(!uploadModal)}
             badgeContent={
               <PhotoCamera
-                // size="large"
                 style={{
                   color: "#141233",
                   backgroundColor: "#ffffff",
@@ -222,7 +272,6 @@ const RecordCorrection = () => {
               onHandleDateChange("employeeDateOfBirth", dateValue);
             }}
             onAccept={(dateValue: Date) => {
-              console.log({ dateValue });
               onHandleDateChange("employeeDateOfBirth", dateValue);
             }}
             errorText={errors["employeeDateOfBirth"]}

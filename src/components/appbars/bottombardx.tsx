@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
 
 import HomeIcon from "@mui/icons-material/Home";
-import ClaimsIcon from "@mui/icons-material/Paid";
+import ClaimsIcon from "@mui/icons-material/Lock";
 import PanelIcon from "@mui/icons-material/LocalHospital";
 import CallIcon from "@mui/icons-material/SupportAgent";
 
@@ -21,6 +21,7 @@ const BottomBarDX = () => {
         bottom: 0,
         left: 0,
         right: 0,
+        zIndex: 1000,
       }}
     >
       <BottomNavigation
@@ -31,7 +32,6 @@ const BottomBarDX = () => {
             "& .MuiBottomNavigationAction-label": {
               fontSize: (theme) => theme.typography.caption,
               transition: "none",
-              fontWeight: "bold",
               lineHeight: "20px",
             },
             "& .MuiSvgIcon-root, & .MuiBottomNavigationAction-label": {
@@ -61,7 +61,7 @@ const BottomBarDX = () => {
           onClick={() => navigate("/claims")}
         />
         <BottomNavigationAction
-          label="Panel Hospitals"
+          label="Panel"
           icon={<PanelIcon />}
           onClick={() => navigate("/panel-hospitals")}
         />

@@ -1,4 +1,3 @@
-import React from "react";
 import BoxDX from "./boxdx";
 import userIcon from "./../../assets/user.png";
 

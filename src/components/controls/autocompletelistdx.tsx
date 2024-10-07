@@ -4,6 +4,7 @@ import Skeleton from "react-loading-skeleton";
 
 import { useStyles } from "../../shared/styles";
 import ToolTipHelper from "./tooltip";
+import SearchIcon  from '@mui/icons-material/Search';
 
 const AutoCompleteListDX = (props: any) => {
   const classes = useStyles();
@@ -12,6 +13,7 @@ const AutoCompleteListDX = (props: any) => {
   const checkValue = props.value ?? "";
   const isError = props.errorText ?? false;
   const loading = props.loading ?? false;
+  const isSearch=props.isSearch?? false;
 
   if (loading)
     return (
@@ -41,8 +43,7 @@ const AutoCompleteListDX = (props: any) => {
         fullWidth
         disableClearable
         options={props.list}
-        autoHighlight
-        getOptionLabel={(option: any) => option.value || ""}
+        getOptionLabel={(option: any) => option.value|| option.hospitalName || ""}
         {...props}
         renderInput={(params) => {
           const defaultEndAdornment = params.InputProps.endAdornment;
@@ -61,16 +62,23 @@ const AutoCompleteListDX = (props: any) => {
                 ...params.InputProps,
                 endAdornment:
                   props.tip == null ? (
-                    defaultEndAdornment
+                    isSearch? 
+                    <InputAdornment position="end" >
+                    <SearchIcon sx={{ml:"100%"}}/>
+                  </InputAdornment>
+                  :
+                  defaultEndAdornment
                   ) : (
                     <>
                       <InputAdornment position="end">
                         <ToolTipHelper title={props.tip} />
                       </InputAdornment>
+                    
                       {defaultEndAdornment}
                     </>
                   ),
               }}
+            
               variant={!props.readOnly ? "outlined" : "standard"}
               disabled={props.readOnly || props.disabled}
               InputLabelProps={{ shrink: props.readOnly }}
