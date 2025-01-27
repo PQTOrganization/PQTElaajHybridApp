@@ -23,14 +23,16 @@ import DocumentAttachDX from "../controls/documentattachdx";
 import { useAuthContext } from "../../context/authcontext";
 import { useErrorContext } from "../../context/errorcontext";
 
-import { getDocumentTypes } from "../../shared/services/claimservice";
 import LoadingButtonDX from "../controls/loadingbuttondx";
 import { uploadDocument } from "../../shared/services/claimdocumentservice";
 import { useConfigContext } from "../../context/configcontext";
 
 const ClaimCard = (props: any) => {
-  const theme = useTheme();
   const claimData = props.data;
+  const documentTypes = props.documentTypes;
+
+  const theme = useTheme();
+
   const [show, setShow] = useState(false);
 
   const statusColor = () => {
@@ -64,6 +66,7 @@ const ClaimCard = (props: any) => {
       <CardDialogue
         show={show}
         setShow={setShow}
+        documentTypes={documentTypes}
         claimData={claimData}
         statusColor={statusColor}
         statusIcon={statusIcon}
@@ -138,12 +141,15 @@ const ClaimCard = (props: any) => {
 export default ClaimCard;
 
 const CardDialogue = (props: any) => {
+  const documentTypes = props.documentTypes;
+  const claimData = props.claimData;
+
   const { getToken } = useAuthContext();
   const { setInfo, setError } = useErrorContext();
   const { CUMULATIVE_DOC_SIZE } = useConfigContext();
+  let cumulativeInBytes = CUMULATIVE_DOC_SIZE * 1000000;
 
   const [isDesktop, setIsDesktop] = useState<any>(window.innerWidth > 768);
-  const [documentTypes, setDocumentTypes] = useState<any>([]);
   const [docs, setDocs] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<any>({});
@@ -151,15 +157,6 @@ const CardDialogue = (props: any) => {
   const [totalSize, setTotalSize] = useState("0");
 
   useEffect(() => {
-    const token = getToken();
-    Promise.all([
-      getDocumentTypes(token).then((response) => {
-        setDocumentTypes(response);
-      }),
-    ])
-      .catch((err) => setError(err))
-      .finally(() => setLoading(false));
-
     const handleResize = () => setIsDesktop(window.innerWidth > 768);
     window.addEventListener("resize", handleResize);
 
@@ -177,7 +174,7 @@ const CardDialogue = (props: any) => {
       const element = docs[index];
       cumSize += element.size;
     }
-    console.log("cum size", cumSize);
+    console.log("cummlative size", cumSize);
     return cumSize;
   };
 
@@ -202,6 +199,14 @@ const CardDialogue = (props: any) => {
 
     if (docs.length === 0)
       newErrors["documents"] = "Atleast one document must be attached.";
+    else {
+      let cumSize = calculateCumulativeSize();
+      if (cumSize >= cumulativeInBytes)
+        newErrors["documents"] =
+          "Size of all documents is more than the allowed size of " +
+          CUMULATIVE_DOC_SIZE +
+          " MB.";
+    }
 
     setErrors(newErrors);
 
@@ -238,8 +243,6 @@ const CardDialogue = (props: any) => {
         .finally(() => setSendingRequest(false));
     }
   };
-
-  const claimData = props.claimData;
 
   return (
     <Dialog
@@ -393,7 +396,7 @@ const CardDialogue = (props: any) => {
                     </Typography>
                   )}
                 </GridDX>
-                {documentTypes.map((item: any, index: number) => {
+                {documentTypes?.map((item: any, index: number) => {
                   return (
                     <DocumentAttachDX
                       id={index + 1}

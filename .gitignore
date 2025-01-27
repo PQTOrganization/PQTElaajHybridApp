@@ -25,3 +25,4 @@ yarn-error.log*
 elaajwebapp.zip
 web.config
 web - Copy.config
+src/pages/account/testmobilepage.tsx

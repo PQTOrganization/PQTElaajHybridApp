@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Divider,
   Typography,
@@ -24,6 +24,7 @@ import { useErrorContext } from "../../context/errorcontext";
 
 import {
   formattedNumber,
+  openDocumentUploadOnMobile,
   readableFileSize,
   resizeFile,
   toBase64,
@@ -31,6 +32,7 @@ import {
 import { useConfigContext } from "../../context/configcontext";
 
 const DocumentAttachDX = (props: any) => {
+  const inputFile = useRef();
   const { setError } = useErrorContext();
   const { DOC_SIZE, IMAGE_SIZE } = useConfigContext();
 
@@ -39,8 +41,40 @@ const DocumentAttachDX = (props: any) => {
   const [documentToView, setDocumentToView] = useState<any>(null);
 
   useEffect(() => {
+    document.addEventListener("message", docFromApp, false);
     pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+
+    return () => {
+      document.removeEventListener("message", docFromApp, false);
+    };
   }, []);
+
+  useEffect(() => {
+    document.removeEventListener("message", docFromApp, false);
+    document.addEventListener("message", docFromApp, false);
+    return () => {
+      document.removeEventListener("message", docFromApp, false);
+    };
+  }, [attachedDocuments]);
+
+  const docFromApp = async (message: any) => {
+    let id = JSON.parse(message.data).id;
+    let k = JSON.parse(message.data).key;
+    let data = JSON.parse(message.data).data;
+    let type = JSON.parse(message.data).type;
+    let name = JSON.parse(message.data).name;
+    let size = parseInt(JSON.parse(message.data).size);
+
+    if (props.id === id) {
+      if (type === "pdf") {
+        data = "data:application/pdf;base64," + data;
+      } else {
+        data = "data:image/png;base64," + data;
+      }
+
+      onHandleDocumentUploadFromMobile(data, name, size, type);
+    }
+  };
 
   const calculatePercentIncrease = (sizeInMB: any) => {
     const numerator = Math.abs(sizeInMB - IMAGE_SIZE);
@@ -63,30 +97,34 @@ const DocumentAttachDX = (props: any) => {
     return sizeInBytes;
   };
 
-  const reduceImageSizeToLimit = (originalImage: any, sizeInMB: any) => {
-    return new Promise((resolve, reject) => {
-      const percentInc = calculatePercentIncrease(sizeInMB);
+  const onHandleDocumentUploadFromMobile = async (
+    doc: any,
+    name: string,
+    size: number,
+    type: string
+  ) => {
+    let fileSize = 0,
+      readableSize;
 
-      var image = new Image();
-      image.src = originalImage;
-      image.onload = () => {
-        const oc = document.createElement("canvas");
-        const octx = oc.getContext("2d");
+    if (type === "image") {
+      fileSize = getBase64ImageSizeInBytes(doc);
+      readableSize = readableFileSize(fileSize);
+    } else {
+      fileSize = size;
+      readableSize = readableFileSize(size);
+    }
 
-        oc.width = image.width * (1 - percentInc);
-        oc.height = image.height * (1 - percentInc);
+    let newDocumentData = {
+      key: props.name + moment().unix(),
+      docType: props.type,
+      documentName: name,
+      document: doc,
+      size: fileSize,
+      readableSize: readableSize,
+    };
 
-        // step 2, resize to size
-        octx?.drawImage(image, 0, 0, oc.width, oc.height);
-
-        const newImage = oc.toDataURL();
-        const newSizeInMB = getBase64ImageSizeInMB(newImage);
-        console.log({ newSizeInMB });
-
-        return resolve(newImage);
-      };
-      image.onerror = (error) => reject(error);
-    });
+    setAttachedDocuments([...attachedDocuments, newDocumentData]);
+    props.onDocumentAdd(newDocumentData);
   };
 
   const onHandleDocumentUpload = async (docId: any, newDocument: any) => {
@@ -167,6 +205,21 @@ const DocumentAttachDX = (props: any) => {
     const newDocs = attachedDocuments.filter((x: any) => x.key !== docKey);
     setAttachedDocuments(newDocs);
     props.onDocumentRemove(docKey);
+  };
+
+  const handleFileAdd = () => {
+    const win: any = window;
+    if (win?.ReactNativeWebView) {
+      openDocumentUploadOnMobile(props.id);
+    } else {
+      console.log("here");
+      const input = document.getElementById(props.id);
+
+      if (input) {
+        input.click();
+      }
+      // setUploadModal(!uploadModal);
+    }
   };
 
   return (
@@ -285,13 +338,25 @@ const DocumentAttachDX = (props: any) => {
             onHandleDocumentUpload(props.id, e.target.files[0]);
           }}
         />
-        <label htmlFor={props.id}>
-          <ButtonDX component="span">Add Document</ButtonDX>
-        </label>
+        {/* <label htmlFor={props.id}> */}
+        <ButtonDX component="span" onClick={handleFileAdd}>
+          Add Document
+        </ButtonDX>
+        {/* </label> */}
       </GridDX>
+      {/* <GridDX item xs={12}>
+        {attachedDocuments.length}
+      </GridDX> */}
+      {/* <GridDX item xs={12}>
+        {stateValue}
+      </GridDX> */}
+      {/* <ButtonDX onClick={() => setStateValue("in porces")}>Click me</ButtonDX> */}
       <GridDX item xs={12} sx={{ py: 1 }}>
         <Divider sx={{ flex: 1 }} />
       </GridDX>
+      {/* <GridDX item xs={12}>
+        {attachedDocuments.length}
+      </GridDX> */}
     </GridDX>
   );
 };

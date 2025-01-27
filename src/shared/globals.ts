@@ -163,3 +163,21 @@ export const getBase64ImageSizeInMB = (image: any) => {
   const sizeInMB = sizeInBytes / 1048576;
   return sizeInMB;
 };
+
+export const openCameraOnMobile = () => {
+  const win: any = window;
+
+  if (win?.ReactNativeWebView)
+    win.ReactNativeWebView.postMessage(
+      JSON.stringify({ type: "opencamera", data: "" })
+    );
+};
+
+export const openDocumentUploadOnMobile = (id: number) => {
+  const win: any = window;
+  let data = { id: id };
+  if (win?.ReactNativeWebView)
+    win.ReactNativeWebView.postMessage(
+      JSON.stringify({ type: "opendocupload", data: JSON.stringify(data) })
+    );
+};

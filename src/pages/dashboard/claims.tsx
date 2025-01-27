@@ -12,7 +12,11 @@ import ClaimBox from "../../components/business/claimbox";
 import ClaimCard from "../../components/business/claimcard";
 import AlertComponenet from "../../components/alerts/alert";
 
-import { getClaim, getClaimSummary } from "../../shared/services/claimservice";
+import {
+  getClaim,
+  getClaimSummary,
+  getDocumentTypes,
+} from "../../shared/services/claimservice";
 
 const Claims = () => {
   const navigate = useNavigate();
@@ -32,14 +36,21 @@ const Claims = () => {
     totalClaimAmount: 0,
     totalPaidAmount: 0,
   });
+  const [documentTypes, setDocumentTypes] = useState<any>([]);
 
   useEffect(() => {
-    getUserDetails()
-      .then((resp: any) => {
-        RecentClaims(resp.policyNumber, resp.employeeCode);
-        ClaimSummary(resp.policyNumber, resp.certNumber, resp.employeeCode);
+    const token = getToken();
+
+    getDocumentTypes(token)
+      .then((response) => {
+        setDocumentTypes(response);
+
+        getUserDetails().then((resp: any) => {
+          RecentClaims(resp.policyNumber, resp.employeeCode);
+          ClaimSummary(resp.policyNumber, resp.certNumber, resp.employeeCode);
+        });
       })
-      .catch((err: any) => setError(err));
+      .catch((err) => setError(err));
   }, []);
 
   const ClaimSummary = (
@@ -89,7 +100,12 @@ const Claims = () => {
   return (
     <GridDX
       container
-      sx={{ width: "100%", alignContent: "flex-start", height: "100%", overflowY:"auto"}}
+      sx={{
+        width: "100%",
+        alignContent: "flex-start",
+        height: "100%",
+        overflowY: "auto",
+      }}
       rowSpacing={2}
       columnSpacing={1}
     >
@@ -132,7 +148,11 @@ const Claims = () => {
       <GridDX item xs={12} sx={{ flexDirection: "column" }}>
         {data !== null ? (
           data.map((c: any, index: number) => (
-            <ClaimCard key={"rc_data_" + index} data={c} />
+            <ClaimCard
+              key={"rc_data_" + index}
+              data={c}
+              documentTypes={documentTypes}
+            />
           ))
         ) : (
           <Skeleton

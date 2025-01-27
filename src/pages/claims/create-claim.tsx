@@ -33,6 +33,8 @@ const CreateClaim = () => {
   const { setInfo, setError } = useErrorContext();
   const { CUMULATIVE_DOC_SIZE } = useConfigContext();
 
+  let cumulativeInBytes = CUMULATIVE_DOC_SIZE * 1000000;
+
   const defaultValues = {
     claimTypeId: "",
     panelHospitalId: "",
@@ -158,7 +160,7 @@ const CreateClaim = () => {
       newErrors["documents"] = "Atleast one document must be attached.";
     else {
       let cumSize = calculateCumulativeSize();
-      if (cumSize >= CUMULATIVE_DOC_SIZE)
+      if (cumSize >= cumulativeInBytes)
         newErrors["documents"] =
           "Size of all documents is more than the allowed size of " +
           CUMULATIVE_DOC_SIZE +

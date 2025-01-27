@@ -18,7 +18,7 @@ import UploadModalDX from "../components/controls/uploadmodalDX";
 import TextFieldDX from "../components/controls/textfielddx";
 import LoadingButtonDX from "../components/controls/loadingbuttondx";
 
-import { dataURLtoBlob, toBase64 } from "../shared/globals";
+import { dataURLtoBlob, openCameraOnMobile, toBase64 } from "../shared/globals";
 import { CorrectionRecord, getMembers } from "../shared/services/memberservice";
 
 const RecordCorrection = () => {
@@ -40,7 +40,11 @@ const RecordCorrection = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [loggedInUser, setLoggedInUserData] = useState<any>(null);
 
+  const [mobileImage, setMobileImage] = useState("");
+
   useEffect(() => {
+    document.addEventListener("message", photoFromApp, false);
+
     getUserDetails().then((userDetails: any) => {
       setLoggedInUserData(userDetails);
 
@@ -56,7 +60,26 @@ const RecordCorrection = () => {
           setIsLoading(false);
         });
     });
+
+    return () => {
+      document.removeEventListener("message", photoFromApp, false);
+    };
   }, []);
+
+  useEffect(() => {
+    document.removeEventListener("message", photoFromApp, false);
+    document.addEventListener("message", photoFromApp, false);
+
+    return () => {
+      document.removeEventListener("message", photoFromApp, false);
+    };
+  }, [userData]);
+
+  const photoFromApp = async (message: any) => {
+    let imgBase64 = "data:image/png;base64," + JSON.parse(message.data).data;
+    await UpdateProfile(imgBase64, "");
+    // setMobileImage(imgBase64);
+  };
 
   const calculatePercentIncrease = (sizeInMB: any) => {
     const numerator = Math.abs(sizeInMB - IMAGE_SIZE);
@@ -99,10 +122,20 @@ const RecordCorrection = () => {
     });
   };
 
-  const UpdateProfile = async (capturedImage: any, fileName: any) => {
+  const UpdateProfileFromBrowser = async (
+    capturedImage: any,
+    fileName: any
+  ) => {
     setimage(capturedImage);
     var imageFile: any = dataURLtoBlob(capturedImage);
     var profileImage = await toBase64(imageFile);
+    await UpdateProfile(profileImage, "");
+  };
+
+  const UpdateProfile = async (profileImage: any, fileName: any) => {
+    // setimage(capturedImage);
+    // var imageFile: any = dataURLtoBlob(capturedImage);
+    // var profileImage = await toBase64(imageFile);
 
     const sizeInMB = getBase64ImageSizeInMB(profileImage);
 
@@ -194,6 +227,13 @@ const RecordCorrection = () => {
     setUserData(members[membersIndex]);
   };
 
+  const handlePictureSelection = () => {
+    const win: any = window;
+    if (win?.ReactNativeWebView) {
+      openCameraOnMobile();
+    } else setUploadModal(!uploadModal);
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <GridDX
@@ -216,7 +256,7 @@ const RecordCorrection = () => {
               vertical: "bottom",
               horizontal: "right",
             }}
-            onClick={() => setUploadModal(!uploadModal)}
+            onClick={() => handlePictureSelection()}
             badgeContent={
               <PhotoCamera
                 style={{
@@ -329,7 +369,7 @@ const RecordCorrection = () => {
           <UploadModalDX
             show={uploadModal}
             setshow={() => setUploadModal(!uploadModal)}
-            UploadFile={UpdateProfile}
+            UploadFile={UpdateProfileFromBrowser}
           />
         ) : (
           ""

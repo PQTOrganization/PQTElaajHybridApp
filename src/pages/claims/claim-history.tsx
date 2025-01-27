@@ -13,7 +13,10 @@ import ParticipantSelector from "../../components/business/particpantselector";
 import { useErrorContext } from "../../context/errorcontext";
 import { useAuthContext } from "../../context/authcontext";
 
-import { getAllClaims } from "../../shared/services/claimservice";
+import {
+  getAllClaims,
+  getDocumentTypes,
+} from "../../shared/services/claimservice";
 import {
   getMemberPolicyPeriods,
   getMembers,
@@ -34,14 +37,22 @@ const ClaimHistory = () => {
   const [policyPeriod, setPolicyPeriod] = useState(0);
   const [userDetails, setUserDetails] = useState<any>(null);
   const [selectedParticipant, setSelectedParticipant] = useState<any>(null);
+  const [documentTypes, setDocumentTypes] = useState<any>([]);
 
   useEffect(() => {
     getUserDetails().then((userDetails: any) => {
       setUserDetails(userDetails);
 
-      if (!isAdminUser()) {
-        loadMembersData(userDetails.policyNumber, userDetails.employeeCode);
-      }
+      const token = getToken();
+      getDocumentTypes(token)
+        .then((response) => {
+          setDocumentTypes(response);
+
+          if (!isAdminUser()) {
+            loadMembersData(userDetails.policyNumber, userDetails.employeeCode);
+          }
+        })
+        .catch((err) => setError(err));
     });
   }, []);
 
@@ -187,7 +198,11 @@ const ClaimHistory = () => {
               </Typography>
             ) : (
               data.map((c: any, index: number) => (
-                <ClaimCard key={"rc_data_" + index} data={c} />
+                <ClaimCard
+                  key={"rc_data_" + index}
+                  data={c}
+                  documentTypes={documentTypes}
+                />
               ))
             )}
           </GridDX>
