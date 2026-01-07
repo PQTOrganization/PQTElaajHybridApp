@@ -400,6 +400,7 @@ const Home = () => {
                       emailAddress: userDetails?.emailAddress,
                       customerCode: userDetails?.customerCode,
                       customerName: userDetails?.customerFullName,
+                      branchId: userDetails?.branchID,
                     })
                   );
                 }}

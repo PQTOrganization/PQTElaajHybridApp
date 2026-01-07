@@ -11,6 +11,7 @@ import ButtonDX from "../../components/controls/buttondx";
 import { intimateDeviceForFBSetup } from "../../shared/globals";
 import CheckBoxDX from "../../components/controls/checkboxdx";
 import Hotline from "./hotline";
+import MobileEmailAddressInputPopup from "../../components/business/mobileemailaddressinputpopup";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -28,6 +29,8 @@ const SignIn = () => {
 
   const [formValues, setFormValues] = useState<any>(defaultValues);
   const [errors, setErrors] = useState<any>({});
+  const [showDetailsPopup, setShowDetailsPopup] = useState(false);
+  const [popupUser, setPopupUser] = useState(null);
 
   useEffect(() => {
     rememberMeData().then((data: any) => {
@@ -66,12 +69,26 @@ const SignIn = () => {
       login(formValues.userName, formValues.password)
         .then((response) => {
           signIn(response.userInfo, response.tokenInfo.token, formValues);
+          setPopupUser(response.userInfo);
           intimateDeviceForFBSetup();
-          navigate("/home", { replace: true });
+
+          let showDetailsPopup =
+            response.userInfo.isContactInfoVerified === false;
+          setShowDetailsPopup(showDetailsPopup);
+          if (!showDetailsPopup) {
+            navigate("/home", {
+              replace: true,
+              state: { showDetailsPopup: showDetailsPopup },
+            });
+          }
         })
         .catch((err) => setError(err))
         .finally(() => setIsLoading(false));
     }
+  };
+
+  const onSave = () => {
+    navigate("/home");
   };
 
   const validateForm = () => {
@@ -98,115 +115,123 @@ const SignIn = () => {
     }
   };
   return (
-    <GridDX
-      container
-      sx={{
-        mt: "200px",
-        padding: "5px",
-        maxWidth: 700,
-      }}
-      rowSpacing={1}
-      onKeyPress={handleKeyPress}
-    >
-      <GridDX item xs={12} justifyContent="center" sx={{ height: 120 }}>
-        <img src={ElaajLogo} alt="Elaaj Logo" width={100} height={100} />
-      </GridDX>
-      <GridDX item xs={12} justifyContent="center">
-        {/* <Typography color="primary" sx={{ fontSize: 28, fontWeight: "bold" }}>
+    <>
+      <MobileEmailAddressInputPopup
+        show={showDetailsPopup}
+        setshow={setShowDetailsPopup}
+        user={popupUser}
+      />
+      <GridDX
+        container
+        sx={{
+          mt: "200px",
+          padding: "5px",
+          maxWidth: 700,
+          minHeight: "100%",
+        }}
+        rowSpacing={1}
+        onKeyPress={handleKeyPress}
+      >
+        <GridDX item xs={12} justifyContent="center" sx={{ height: 120 }}>
+          <img src={ElaajLogo} alt="Elaaj Logo" width={100} height={100} />
+        </GridDX>
+        <GridDX item xs={12} justifyContent="center">
+          {/* <Typography color="primary" sx={{ fontSize: 28, fontWeight: "bold" }}>
           Sign In
         </Typography> */}
+        </GridDX>
+        <GridDX item xs={12} justifyContent="center" sx={{ mt: 2, mb: 1 }}>
+          <TextFieldDX
+            name="userName"
+            label={"Username"}
+            type="number"
+            value={formValues.userName}
+            onChange={handleInputChange}
+            errorText={errors["userName"]}
+            variant="standard"
+            InputLabelProps={{
+              sx: {
+                color: "#8B0037",
+                textAlign: "center",
+                width: "100%",
+                transformOrigin: "top",
+              },
+            }}
+            sx={{
+              "& .MuiInput-underline:before": {
+                borderBottom: "2px solid #8B0037 !important",
+              },
+            }}
+          />
+        </GridDX>
+        <GridDX item xs={12} justifyContent="center">
+          <TextFieldDX
+            name="password"
+            type="password"
+            label="Password"
+            value={formValues.password}
+            onChange={handleInputChange}
+            errorText={errors["password"]}
+            variant="standard"
+            sx={{
+              "& .MuiInput-underline:before": {
+                borderBottom: "2px solid #8B0037 !important",
+              },
+            }}
+            InputLabelProps={{
+              sx: {
+                color: "#8B0037",
+                textAlign: "center",
+                width: "100%",
+                transformOrigin: "top",
+              },
+            }}
+          />
+        </GridDX>
+        <GridDX item xs={12}>
+          <CheckBoxDX
+            label="Remember Me"
+            checked={formValues.rememberMe}
+            onChange={handleRemeberMeChange}
+          />
+        </GridDX>
+        <GridDX item xs={12} justifyContent="center">
+          <LoadingButtonDX
+            onClick={onLoginClick}
+            loading={isLoading}
+            sx={{
+              mt: 1,
+              backgroundColor: "green !important",
+              width: "190px",
+              borderRadius: "50px",
+            }}
+          >
+            Login
+          </LoadingButtonDX>
+        </GridDX>
+        {/* <GridDX item xs={6}>
+          <ButtonDX
+            variant="text"
+            sx={{ mb: 4 }}
+            onClick={() => navigate("/register")}
+          >
+            Registration
+          </ButtonDX>
+        </GridDX> */}
+        <GridDX item xs={12} justifyContent="center">
+          <ButtonDX
+            variant="text"
+            sx={{ mb: 4 }}
+            onClick={() => navigate("/forgetpassword")}
+          >
+            Forgot Password?
+          </ButtonDX>
+        </GridDX>
+        <GridDX item xs={12} sx={{ alignItems: "center" }}>
+          <Hotline />
+        </GridDX>
       </GridDX>
-      <GridDX item xs={12} justifyContent="center" sx={{ mt: 2, mb: 1 }}>
-        <TextFieldDX
-          name="userName"
-          label={"Username"}
-          type="number"
-          value={formValues.userName}
-          onChange={handleInputChange}
-          errorText={errors["userName"]}
-          variant="standard"
-          InputLabelProps={{
-            sx: {
-              color: "#8B0037",
-              textAlign: "center",
-              width: "100%",
-              transformOrigin: "top",
-            },
-          }}
-          sx={{
-            "& .MuiInput-underline:before": {
-              borderBottom: "2px solid #8B0037 !important", 
-            },
-          }}
-        />
-      </GridDX>
-      <GridDX item xs={12} justifyContent="center">
-        <TextFieldDX
-          name="password"
-          type="password"
-          label="Password"
-          value={formValues.password}
-          onChange={handleInputChange}
-          errorText={errors["password"]}
-          variant="standard"
-          sx={{
-            "& .MuiInput-underline:before": {
-              borderBottom: "2px solid #8B0037 !important", 
-            },
-          }}
-          InputLabelProps={{
-            sx: {
-              color: "#8B0037",
-              textAlign: "center",
-              width: "100%",
-              transformOrigin: "top",
-            },
-          }}
-        />
-      </GridDX>
-      <GridDX item xs={12}>
-        <CheckBoxDX
-          label="Remember Me"
-          checked={formValues.rememberMe}
-          onChange={handleRemeberMeChange}
-        />
-      </GridDX>
-      <GridDX item xs={12} justifyContent="center">
-        <LoadingButtonDX
-          onClick={onLoginClick}
-          loading={isLoading}
-          sx={{
-            mt: 1,
-            backgroundColor: "green !important",
-            width: "190px",
-            borderRadius: "50px",
-          }}
-        >
-          Login
-        </LoadingButtonDX>
-      </GridDX>
-      <GridDX item xs={6}>
-        <ButtonDX
-          variant="text"
-          sx={{ mb: 4 }}
-          onClick={() => navigate("/register")}
-        >
-          Registration
-        </ButtonDX>
-      </GridDX>
-      <GridDX item xs={6} justifyContent="flex-end">
-        <ButtonDX
-          variant="text"
-          sx={{ mb: 4 }}
-          onClick={() => navigate("/forgetpassword")}
-        >
-          Forgot Password?
-        </ButtonDX>
-      </GridDX>
-      <GridDX item xs={12} sx={{ alignItems: "center" }}>
-        <Hotline />
-      </GridDX>
-    </GridDX>
+    </>
   );
 };
 

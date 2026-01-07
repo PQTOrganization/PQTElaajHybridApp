@@ -23,6 +23,9 @@ const ConfigProvider = ({ children }: AuxProps) => {
   const [DATE_FORMAT, setDateFormat] = useState<string>("DD-MMM-yyyy");
   const [IMAGE_SIZE, setImageSize] = useState<Number>(2.75);
   const [CUMULATIVE_DOC_SIZE, setCumulativeDocSize] = useState<Number>(1);
+  const [REDUCED_IMG_MAXHEIGHT, setReducedImgMaxHeight] = useState<Number>(800);
+  const [REDUCED_IMG_MAXWIDTH, setReducedImgMaxWidth] = useState<Number>(1024);
+  const [RESEND_TIMER, setResendTimer] = useState<Number>(120);
 
   useEffect(() => {
     getData();
@@ -52,6 +55,13 @@ const ConfigProvider = ({ children }: AuxProps) => {
     if (data.IMAGE_SIZE) setImageSize(data.IMAGE_SIZE);
     if (data.CUMULATIVE_DOC_SIZE)
       setCumulativeDocSize(data.CUMULATIVE_DOC_SIZE);
+    if (data.REDUCED_IMG_MAXHEIGHT)
+      setReducedImgMaxHeight(data.REDUCED_IMG_MAXHEIGHT);
+    if (data.REDUCED_IMG_MAXWIDTH)
+      setReducedImgMaxWidth(data.REDUCED_IMG_MAXWIDTH);
+    if (data.RESEND_TIMER) {
+      setResendTimer(data.RESEND_TIMER);
+    }
 
     setConfigLoaded(true);
   }, [data]);
@@ -66,6 +76,9 @@ const ConfigProvider = ({ children }: AuxProps) => {
         DATE_FORMAT,
         IMAGE_SIZE,
         CUMULATIVE_DOC_SIZE,
+        REDUCED_IMG_MAXHEIGHT,
+        REDUCED_IMG_MAXWIDTH,
+        RESEND_TIMER,
       }}
     >
       {children}

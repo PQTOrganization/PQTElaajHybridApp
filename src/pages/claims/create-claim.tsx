@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link, Typography } from "@mui/material";
 
@@ -17,12 +17,13 @@ import {
   getAllClaimTypes,
   getDocumentTypes,
 } from "../../shared/services/claimservice";
-import { getPanelHospitalsLookup } from "../../shared/services/commonservice";
+// import { getPanelHospitalsLookup } from "../../shared/services/commonservice";
 import { getMembers } from "../../shared/services/memberservice";
 import { createClaimRequest } from "../../shared/services/claimservice";
 import {
   formattedNumber,
   getBase64ImageSizeInMB,
+  logOnMobile,
   readableFileSize,
 } from "../../shared/globals";
 import { useConfigContext } from "../../context/configcontext";
@@ -44,7 +45,7 @@ const CreateClaim = () => {
   const [formValues, setFormValues] = useState(defaultValues);
   const [errors, setErrors] = useState<any>({});
   const [claimTypes, setClaimTypes] = useState([]);
-  const [hospitals, setHospitals] = useState([]);
+  // const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [documentTypes, setDocumentTypes] = useState<any>([]);
   const [docs, setDocs] = useState<any>([]);
@@ -59,7 +60,6 @@ const CreateClaim = () => {
   useEffect(() => {
     getUserDetails().then((userDetails: any) => {
       setUserDetails(userDetails);
-
       if (!isAdminUser()) {
         loadMembersData(
           userDetails.policyNumber,
@@ -85,10 +85,8 @@ const CreateClaim = () => {
     setTotalSize(readableFileSize(totalSize));
   }, [docs]);
 
-  const addDocument = async (newDocument: any) => {
-    const currentList: any[] = [...docs];
-    currentList.push(newDocument);
-    setDocs(currentList);
+  const addDocument = (newDocument: any) => {
+    setDocs((prevDocuments: any) => [...prevDocuments, newDocument]);
   };
 
   const removeDocument = async (docKey: string) => {
@@ -108,13 +106,17 @@ const CreateClaim = () => {
     });
 
     if (name === "claimTypeId") {
-      if (
-        // value === "RGHOPSV01" ||
-        // value === "RGHOPV01" ||
-        value === "GH202207589132"
-      )
-        setClaimLimit(25000);
-      else setClaimLimit(20000);
+      let mem = members[selectedIndex];
+
+      if (value === "GH202207589132") setClaimLimit(25000);
+      else if (
+        mem.policyNumber === "FT201805000225" &&
+        (value === "RGHOPV01" || value === "BGHTV02")
+      ) {
+        setClaimLimit(50000);
+      } else if (mem.policyNumber === "GH202311589621") {
+        setClaimLimit(50000);
+      } else setClaimLimit(20000);
     }
   };
 
@@ -195,6 +197,7 @@ const CreateClaim = () => {
 
     createClaimRequest(
       members[selectedIndex].employeeSRNumber,
+      members[selectedIndex].policyNumber,
       employeeCode,
       formValues.claimTypeId,
       null,
@@ -237,9 +240,9 @@ const CreateClaim = () => {
         setMembers(members)
       ),
       loadClaimTypes(certNumber),
-      getPanelHospitalsLookup(token).then((response) => {
-        setHospitals(response);
-      }),
+      // getPanelHospitalsLookup(token).then((response) => {
+      //   setHospitals(response);
+      // }),
       getDocumentTypes(token).then((response) => {
         setDocumentTypes(response);
       }),
@@ -319,10 +322,10 @@ const CreateClaim = () => {
                 download={true}
                 underline="hover"
               >
-                Claim Form (Page 1 & 2)
+                Claim Form
               </Link>{" "}
-              Filled by your treating physician and and submit below along with
-              all relevant document
+              filled by your treating physician and submit below along with all
+              relevant document
             </Typography>
           </GridDX>
           <GridDX xs={6}>Attach Document(s)</GridDX>
@@ -347,6 +350,7 @@ const CreateClaim = () => {
               </Typography>
             )}
           </GridDX>
+
           {documentTypes.map((item: any, index: number) => {
             return (
               <DocumentAttachDX

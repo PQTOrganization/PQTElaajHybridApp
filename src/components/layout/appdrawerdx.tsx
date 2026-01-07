@@ -32,6 +32,7 @@ import pak_qatar_semi_circle_logo_2 from "../../assets/pak_qatar_semi_circle_log
 import GridDX from "./griddx";
 
 import { useAuthContext } from "../../context/authcontext";
+import { getProfileImageFromDevice, logOnMobile } from "../../shared/globals";
 
 type Anchor = "top" | "left" | "bottom" | "right";
 
@@ -89,13 +90,43 @@ const AppDrawerDX = () => {
   });
 
   useEffect(() => {
-    getUserDetails().then((user: any) => setUser(user));
+    getUserDetails().then((user: any) => {
+      setUser(user);
+      const win: any = window;
+      if (win?.ReactNativeWebView) {
+        // logOnMobile("fetching profile image from device");
+        getProfileImageFromDevice(user.userId);
+      }
+    });
 
     const handleResize = () => setIsDesktop(window.innerWidth > 768);
     window.addEventListener("resize", handleResize);
+    document.addEventListener("message", photoFromApp, false);
+    window.addEventListener("message", photoFromApp, false); // for IOS
 
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
+
+  const photoFromApp = async (message: any) => {
+    // Evading exception thrown when message is processed even when application is running directly on browser
+    try {
+      let jsonData = JSON.parse(message.data);
+
+      // logOnMobile("received profile image from device" + jsonData.data);
+      if (jsonData.data && jsonData.data !== "" && jsonData.data !== "null") {
+        let imgBase64 = "data:image/png;base64," + jsonData.data;
+
+        setUser({
+          ...user,
+          ["profileImage"]: imgBase64,
+        });
+      }
+    } catch (error) {
+      // console.error("Error parsing message data:", error);
+    }
+  };
 
   const toggleDrawer =
     (anchor: Anchor, open: boolean) =>
@@ -117,7 +148,7 @@ const AppDrawerDX = () => {
       <ListItem key={text} disablePadding>
         <ListItemButton
           onClick={() => {
-            if (link === "/signin") {
+            if (link === "/signin" || link === "/") {
               signOut();
               navigate(link, { replace: true });
             } else navigate(link);
@@ -188,7 +219,14 @@ const AppDrawerDX = () => {
             xs={2}
             sx={{ justifyContent: "center", alignItems: "center" }}
           >
-            <UserIcon fontSize="large" />
+            {user?.profileImage != "" && user?.profileImage != null ? (
+              <img
+                src={user?.profileImage}
+                style={{ width: "35px", height: "35px", borderRadius: "50%" }}
+              />
+            ) : (
+              <UserIcon fontSize="large" />
+            )}
           </GridDX>
           <GridDX
             item

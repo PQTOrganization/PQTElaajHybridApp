@@ -48,6 +48,14 @@ export function readableFileSize(attachmentSize: number) {
   }
 }
 
+export function bytesToMegabytes(bytes: number) {
+  if (typeof bytes !== "number" || bytes < 0) {
+    return "Invalid input: Please provide a positive number of bytes.";
+  }
+  const megabytes = bytes / (1024 * 1024);
+  return megabytes;
+}
+
 export const handleCall = (event: any, number: string = "021111825238") => {
   const win: any = window;
 
@@ -140,12 +148,36 @@ export const openGoogleMapsApp = (directionsData: string) => {
     );
 };
 
-export const resizeFile = (e: any) =>
+export const base64toBlob = (base64Image: any) => {
+  // Split into two parts
+  const parts = base64Image.split(";base64,");
+
+  // Hold the content type
+  const imageType = parts[0].split(":")[1];
+
+  // Decode Base64 string
+  const decodedData = window.atob(parts[1]);
+
+  // Create UNIT8ARRAY of size same as row data length
+  const uInt8Array = new Uint8Array(decodedData.length);
+
+  // Insert all character code into uInt8Array
+  for (let i = 0; i < decodedData.length; ++i) {
+    uInt8Array[i] = decodedData.charCodeAt(i);
+  }
+
+  // Return BLOB image after conversion
+  return new Blob([uInt8Array], { type: imageType });
+};
+
+export const resizeFile = (e: any, maxWidth: number, maxHeight: number) =>
   new Promise((resolve) => {
+    console.log("max width", maxWidth);
+    console.log("max height", maxHeight);
     FileResizer.imageFileResizer(
       e,
-      1024,
-      800,
+      maxWidth,
+      maxHeight,
       "JPEG",
       100,
       0,
@@ -164,12 +196,27 @@ export const getBase64ImageSizeInMB = (image: any) => {
   return sizeInMB;
 };
 
-export const openCameraOnMobile = () => {
+export const getProfileImageFromDevice = (userId: any) => {
+  let data = { userId: userId };
+  const win: any = window;
+  if (win?.ReactNativeWebView) {
+    win.ReactNativeWebView.postMessage(
+      JSON.stringify({
+        type: "getProfileImageFromLocalStorage",
+        data: JSON.stringify(data),
+      })
+    );
+  }
+};
+
+export const openCameraOnMobile = (userId: any) => {
+  let data = { userId: userId };
+
   const win: any = window;
 
   if (win?.ReactNativeWebView)
     win.ReactNativeWebView.postMessage(
-      JSON.stringify({ type: "opencamera", data: "" })
+      JSON.stringify({ type: "opencamera", data: JSON.stringify(data) })
     );
 };
 
@@ -180,4 +227,28 @@ export const openDocumentUploadOnMobile = (id: number) => {
     win.ReactNativeWebView.postMessage(
       JSON.stringify({ type: "opendocupload", data: JSON.stringify(data) })
     );
+};
+
+export const logOnMobile = (message: string) => {
+  const win: any = window;
+
+  if (win?.ReactNativeWebView)
+    win.ReactNativeWebView.postMessage(
+      JSON.stringify({ type: "Console", data: message })
+    );
+};
+
+export const isEmail = (val: string) => {
+  let regEmail =
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,2}\.[0-9]{1,3}\.[0-9]{1,2}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{1,}))$/;
+
+  return regEmail.test(val);
+};
+
+export const pad = (num: any) => {
+  return ("0" + num).slice(-2);
+};
+
+export const formatTimerToMinAndSecs = (seconds: any) => {
+  return pad(Math.floor(seconds / 60)) + ":" + pad(seconds % 60);
 };

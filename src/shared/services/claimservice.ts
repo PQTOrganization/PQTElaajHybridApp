@@ -51,6 +51,7 @@ export const getAllClaimTypes = async (EmpSRNumber: string, token: string) => {
 
 export const createClaimRequest = async (
   certificateNumber: string,
+  policyNumber: string,
   employeeCode: string,
   claimType: string,
   hospitalId: string | null,
@@ -63,6 +64,7 @@ export const createClaimRequest = async (
     claimRequestId: 0,
     requestType: 1,
     certificateNumber: certificateNumber,
+    policyNumber: policyNumber,
     employeeCode: employeeCode,
     claimType: claimType,
     hospitalId: hospitalId,

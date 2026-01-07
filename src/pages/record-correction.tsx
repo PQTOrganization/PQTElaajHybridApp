@@ -20,6 +20,7 @@ import LoadingButtonDX from "../components/controls/loadingbuttondx";
 
 import { dataURLtoBlob, openCameraOnMobile, toBase64 } from "../shared/globals";
 import { CorrectionRecord, getMembers } from "../shared/services/memberservice";
+import moment from "moment";
 
 const RecordCorrection = () => {
   const dmRef = useRef<any>();
@@ -39,11 +40,10 @@ const RecordCorrection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [loggedInUser, setLoggedInUserData] = useState<any>(null);
-
-  const [mobileImage, setMobileImage] = useState("");
+  const [previousUserValues, setPreviousUserValues] = useState<any>(null);
 
   useEffect(() => {
-    document.addEventListener("message", photoFromApp, false);
+    //document.addEventListener("message", photoFromApp, false);
 
     getUserDetails().then((userDetails: any) => {
       setLoggedInUserData(userDetails);
@@ -53,6 +53,7 @@ const RecordCorrection = () => {
       getMembers(userDetails.policyNumber, userDetails.employeeCode, token)
         .then((members) => {
           setMembers(members);
+          setPreviousUserValues(members[0]);
           setUserData(members[0]);
         })
         .catch((err) => setError(err))
@@ -61,12 +62,12 @@ const RecordCorrection = () => {
         });
     });
 
-    return () => {
+    /* return () => {
       document.removeEventListener("message", photoFromApp, false);
-    };
+    }; */
   }, []);
 
-  useEffect(() => {
+  /* useEffect(() => {
     document.removeEventListener("message", photoFromApp, false);
     document.addEventListener("message", photoFromApp, false);
 
@@ -75,7 +76,7 @@ const RecordCorrection = () => {
     };
   }, [userData]);
 
-  const photoFromApp = async (message: any) => {
+   const photoFromApp = async (message: any) => {
     let imgBase64 = "data:image/png;base64," + JSON.parse(message.data).data;
     await UpdateProfile(imgBase64, "");
     // setMobileImage(imgBase64);
@@ -152,7 +153,7 @@ const RecordCorrection = () => {
       ["profileImage"]: reducedImage,
     });
   };
-
+ */
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
     const newErrors = { ...errors };
@@ -176,9 +177,26 @@ const RecordCorrection = () => {
     }
   };
 
+  const compareData = (previousValues: any, currentValues: any) => {
+    const diffs: any = [];
+
+    for (const key of Object.keys(previousValues) as (keyof any)[]) {
+      if (key === "employeeDateOfBirth") {
+        if (moment(previousUserValues[key]).diff(moment(currentValues[key]))) {
+          diffs.push(key);
+        }
+      } else if (previousValues[key] !== currentValues[key]) {
+        diffs.push(key);
+      }
+    }
+    return diffs;
+  };
+
   const PostRecordCorrection = () => {
     setIsSaving(true);
     const token = getToken();
+
+    let updatedProps = compareData(previousUserValues, userData);
 
     CorrectionRecord(
       loggedInUser.emailAddress,
@@ -186,11 +204,13 @@ const RecordCorrection = () => {
       userData.employeeFolioId,
       userData.employeeName,
       userData.employeeCNIC,
-      userData.employeeDateOfBirth,
+      // force the date field in string to moment to handle no date change scenario
+      moment(userData.employeeDateOfBirth).format("YYYY-MM-DD"),
       userData.IBAN,
       userData.employeeMobile,
       userData.employeeEmail,
       userData.profileImage,
+      updatedProps,
       token
     )
       .then((res) => {
@@ -198,7 +218,7 @@ const RecordCorrection = () => {
         navigate(-1);
       })
       .catch((err) => {
-        setInfo("Record Correction Request failed");
+        setError("Record Correction Request failed");
       })
       .finally(() => setIsSaving(false));
   };
@@ -224,14 +244,8 @@ const RecordCorrection = () => {
   };
 
   const onMemberSelectionChange = (membersIndex: number) => {
+    setPreviousUserValues(members[membersIndex]);
     setUserData(members[membersIndex]);
-  };
-
-  const handlePictureSelection = () => {
-    const win: any = window;
-    if (win?.ReactNativeWebView) {
-      openCameraOnMobile();
-    } else setUploadModal(!uploadModal);
   };
 
   return (
@@ -249,7 +263,7 @@ const RecordCorrection = () => {
             loading={isLoading}
           />
         </GridDX>
-        {/* Avatar Section */}
+        {/* Avatar Section 
         <GridDX item xs={12} justifyContent="center">
           <Badge
             anchorOrigin={{
@@ -279,7 +293,7 @@ const RecordCorrection = () => {
               sx={{ width: 90, height: 90, textAlign: "center" }}
             />
           </Badge>
-        </GridDX>
+        </GridDX> */}
 
         <GridDX item xs={12}>
           <TextFieldDX
@@ -365,7 +379,7 @@ const RecordCorrection = () => {
             Request Correction
           </LoadingButtonDX>
         </GridDX>
-        {uploadModal ? (
+        {/* {uploadModal ? (
           <UploadModalDX
             show={uploadModal}
             setshow={() => setUploadModal(!uploadModal)}
@@ -373,7 +387,7 @@ const RecordCorrection = () => {
           />
         ) : (
           ""
-        )}
+        )} */}
       </GridDX>
     </LocalizationProvider>
   );

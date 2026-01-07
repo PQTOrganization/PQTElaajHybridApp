@@ -35,11 +35,12 @@ export const CorrectionRecord = async (
   employeeCode: string,
   name: string,
   cnic: string,
-  dateOfBirth: Date,
+  dateOfBirth: string,
   ibanNumber: string,
   mobileNumber: string,
   email: string,
   profileImage: string,
+  updatedProps: any,
   token: string
 ) => {
   var route = `Member/RecordCorrection`;
@@ -54,7 +55,9 @@ export const CorrectionRecord = async (
     mobileNumber: mobileNumber,
     email: email,
     profileImage: profileImage,
+    updatedProps: updatedProps,
   };
+
   var Data = await Api(route, body, "POST", token);
   return Data;
 };

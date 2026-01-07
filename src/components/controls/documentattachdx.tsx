@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, createRef } from "react";
 import {
   Divider,
   Typography,
@@ -23,6 +23,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useErrorContext } from "../../context/errorcontext";
 
 import {
+  base64toBlob,
+  bytesToMegabytes,
   formattedNumber,
   openDocumentUploadOnMobile,
   readableFileSize,
@@ -34,30 +36,44 @@ import { useConfigContext } from "../../context/configcontext";
 const DocumentAttachDX = (props: any) => {
   const inputFile = useRef();
   const { setError } = useErrorContext();
-  const { DOC_SIZE, IMAGE_SIZE } = useConfigContext();
+  const { DOC_SIZE, IMAGE_SIZE, REDUCED_IMG_MAXHEIGHT, REDUCED_IMG_MAXWIDTH } =
+    useConfigContext();
 
   const [showDoc, setShowDoc] = useState(false);
   const [attachedDocuments, setAttachedDocuments] = useState<any>([]);
   const [documentToView, setDocumentToView] = useState<any>(null);
 
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   useEffect(() => {
     document.addEventListener("message", docFromApp, false);
+    window.addEventListener("message", docFromApp, false); // for IOS
+
     pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
     return () => {
       document.removeEventListener("message", docFromApp, false);
+      window.removeEventListener("message", docFromApp, false);
     };
   }, []);
 
   useEffect(() => {
     document.removeEventListener("message", docFromApp, false);
+    window.removeEventListener("message", docFromApp, false);
+
     document.addEventListener("message", docFromApp, false);
+    window.addEventListener("message", docFromApp, false); // for IOS
+
     return () => {
       document.removeEventListener("message", docFromApp, false);
+      window.removeEventListener("message", docFromApp, false);
     };
   }, [attachedDocuments]);
 
   const docFromApp = async (message: any) => {
+    // Ensure the message is from React Native WebView
+    // if (message.origin !== "null") return; // WebViews send messages with 'null' origin
+
     let id = JSON.parse(message.data).id;
     let k = JSON.parse(message.data).key;
     let data = JSON.parse(message.data).data;
@@ -106,12 +122,9 @@ const DocumentAttachDX = (props: any) => {
     let fileSize = 0,
       readableSize;
 
-    if (type === "image") {
-      fileSize = getBase64ImageSizeInBytes(doc);
-      readableSize = readableFileSize(fileSize);
-    } else {
-      fileSize = size;
-      readableSize = readableFileSize(size);
+    if (type === "pdf" && size / (1024 * 1024) > DOC_SIZE) {
+      setError("The Uploaded file Size is more than " + DOC_SIZE + " MB");
+      return;
     }
 
     let newDocumentData = {
@@ -119,9 +132,35 @@ const DocumentAttachDX = (props: any) => {
       docType: props.type,
       documentName: name,
       document: doc,
-      size: fileSize,
-      readableSize: readableSize,
+      size: size,
+      readableSize: readableFileSize(size),
     };
+
+    if (type === "image") {
+      fileSize = getBase64ImageSizeInBytes(doc);
+      readableSize = readableFileSize(fileSize);
+      let sizeInMB = bytesToMegabytes(fileSize);
+
+      if (sizeInMB > IMAGE_SIZE) {
+        try {
+          console.log("The captured Image is more than " + IMAGE_SIZE + "MB");
+          let docBlob = base64toBlob(doc);
+          const reducedImage = await resizeFile(
+            docBlob,
+            REDUCED_IMG_MAXWIDTH,
+            REDUCED_IMG_MAXHEIGHT
+          );
+          fileSize = getBase64ImageSizeInBytes(reducedImage);
+          readableSize = readableFileSize(fileSize);
+
+          newDocumentData.document = reducedImage;
+          newDocumentData.size = fileSize;
+          newDocumentData.readableSize = readableSize;
+        } catch (err) {
+          setError(err);
+        }
+      }
+    }
 
     setAttachedDocuments([...attachedDocuments, newDocumentData]);
     props.onDocumentAdd(newDocumentData);
@@ -144,13 +183,15 @@ const DocumentAttachDX = (props: any) => {
 
           const docBase64 = await toBase64(newDocument);
 
+          const sizeInBytes = getBase64ImageSizeInBytes(docBase64);
+
           let newDocumentData = {
             key: props.name + moment().unix(),
             docType: props.type,
             documentName: newDocument.name,
             document: docBase64,
-            size: 0,
-            readableSize: "0 mb",
+            size: sizeInBytes,
+            readableSize: readableFileSize(sizeInBytes),
           };
 
           if (newDocument.type.includes("image")) {
@@ -163,10 +204,14 @@ const DocumentAttachDX = (props: any) => {
                 "The captured Image is more than " + IMAGE_SIZE + "MB"
               );
 
-              const reducedImage = await resizeFile(newDocument);
+              const reducedImage = await resizeFile(
+                newDocument,
+                REDUCED_IMG_MAXWIDTH,
+                REDUCED_IMG_MAXHEIGHT
+              );
+
               const newsizeInBytes = getBase64ImageSizeInBytes(reducedImage);
               let newSize = readableFileSize(newsizeInBytes);
-              console.log("new size", newSize);
               newDocumentData.document = reducedImage;
               newDocumentData.size = newsizeInBytes;
               newDocumentData.readableSize = newSize;
@@ -205,6 +250,9 @@ const DocumentAttachDX = (props: any) => {
     const newDocs = attachedDocuments.filter((x: any) => x.key !== docKey);
     setAttachedDocuments(newDocs);
     props.onDocumentRemove(docKey);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleFileAdd = () => {
@@ -212,7 +260,6 @@ const DocumentAttachDX = (props: any) => {
     if (win?.ReactNativeWebView) {
       openDocumentUploadOnMobile(props.id);
     } else {
-      console.log("here");
       const input = document.getElementById(props.id);
 
       if (input) {
@@ -265,7 +312,6 @@ const DocumentAttachDX = (props: any) => {
       <GridDX item xs={11} alignItems="center">
         <Typography>{props.name}</Typography>
       </GridDX>
-
       <GridDX item xs={12} sx={{ flexDirection: "column" }}>
         {attachedDocuments.map((d: any, index: number) => (
           <div
@@ -329,6 +375,7 @@ const DocumentAttachDX = (props: any) => {
 
       <GridDX item xs={12} justifyContent="center">
         <input
+          ref={fileInputRef}
           id={props.id}
           name={props.id.toString()}
           accept="image/*,.pdf"
